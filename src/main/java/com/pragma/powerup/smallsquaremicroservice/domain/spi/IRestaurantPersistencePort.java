@@ -1,6 +1,6 @@
-package com.pragma.powerup.usermicroservice.domain.spi;
+package com.pragma.powerup.smallsquaremicroservice.domain.spi;
 
-import com.pragma.powerup.usermicroservice.domain.model.Restaurant;
+import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 
 public interface IRestaurantPersistencePort {
     void saveRestaurant(Restaurant restaurant);

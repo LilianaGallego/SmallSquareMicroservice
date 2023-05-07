@@ -1,4 +1,4 @@
-package com.pragma.powerup.usermicroservice.adapters.driving.http.dto.response;
+package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response;
 
 public class JwtResponseDto {
     private String token;

@@ -1,4 +1,4 @@
-package com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.entity;
+package com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,9 +1,9 @@
-package com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.impl;
+package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.impl;
 
-import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.RestaurantRequestDto;
-import com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.IRestaurantHandler;
-import com.pragma.powerup.usermicroservice.adapters.driving.http.mapper.IRestaurantRequestMapper;
-import com.pragma.powerup.usermicroservice.domain.api.IRestaurantServicePort;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.RestaurantRequestDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IRestaurantHandler;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IRestaurantRequestMapper;
+import com.pragma.powerup.smallsquaremicroservice.domain.api.IRestaurantServicePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,8 +1,8 @@
-package com.pragma.powerup.usermicroservice.adapters.driving.http.controller;
+package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.controller;
 
-import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.RestaurantRequestDto;
-import com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.IRestaurantHandler;
-import com.pragma.powerup.usermicroservice.configuration.Constants;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IRestaurantHandler;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.RestaurantRequestDto;
+import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

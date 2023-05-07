@@ -1,4 +1,4 @@
-package com.pragma.powerup.usermicroservice.domain.model;
+package com.pragma.powerup.smallsquaremicroservice.domain.model;
 
 public class Restaurant {
     private Long id;
@@ -8,6 +8,8 @@ public class Restaurant {
     private String urlLogo;
     private Long idOwner;
     private String dniNumber;
+
+    public Restaurant  (){}
 
     public Restaurant(Long id, String name, String address, String phone, String urlLogo, Long idOwner, String dniNumber) {
         this.id = id;

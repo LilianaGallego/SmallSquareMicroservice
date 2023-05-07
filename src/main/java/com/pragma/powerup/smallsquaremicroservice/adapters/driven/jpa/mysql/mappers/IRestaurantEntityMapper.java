@@ -1,7 +1,7 @@
-package com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.mappers;
+package com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers;
 
-import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.entity.RestaurantEntity;
-import com.pragma.powerup.usermicroservice.domain.model.Restaurant;
+import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.RestaurantEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

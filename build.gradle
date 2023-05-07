@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.0.4'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id 'jacoco'
 }
 
 group = 'com.ti.acelera'
@@ -39,4 +40,21 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled true
+		html.enabled true
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect{
+			fileTree(dir: it, exclude: ['com/pragma/powerup/smallsquareservice/configuration',
+										'com/pragma/powerup/smallsquareservice/adapters/driven/jpa/mysql/mappers',
+										'com/pragma/powerup/smallsquareservice/adapters/driving/http/mapper',
+										'com/pragma/powerup/smallsquareservice/domain/model',
+										'com/pragma/powerup/smallsquareservice/adapters/driving/http/dto/response'])
+		}))
+	}
 }

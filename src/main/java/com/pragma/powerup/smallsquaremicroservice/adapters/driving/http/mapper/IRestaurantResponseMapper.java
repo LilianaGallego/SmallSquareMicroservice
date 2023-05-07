@@ -1,7 +1,7 @@
-package com.pragma.powerup.usermicroservice.adapters.driving.http.mapper;
+package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper;
 
-import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.response.RestaurantResponseDto;
-import com.pragma.powerup.usermicroservice.domain.model.Restaurant;
+import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.RestaurantResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
