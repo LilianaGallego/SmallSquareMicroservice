@@ -20,9 +20,7 @@ public class OwnerRestController {
     @CrossOrigin("*")
     @GetMapping("/user/owner/{id}")
     public User createRestaurant(@PathVariable Long id){
-        //dniNumber = "313411321";
 
-        //String url ="https://pokeapi.co/api/v2/pokemon/ditto";
         String url ="http://localhost:8080/user/owner/getOwnerById/"+id;
         User user = restTemplate.getForObject(url, User.class);
 
