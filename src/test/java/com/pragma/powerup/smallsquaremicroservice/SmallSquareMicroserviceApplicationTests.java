@@ -1,10 +1,10 @@
-package com.pragma.powerup.usermicroservice;
+package com.pragma.powerup.smallsquareservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class UserMicroserviceApplicationTests {
+class SmallSquareMicroserviceApplicationTests {
 
 	@Test
 	void contextLoads() {
