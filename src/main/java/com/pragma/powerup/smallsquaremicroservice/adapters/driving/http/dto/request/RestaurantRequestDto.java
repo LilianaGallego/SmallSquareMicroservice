@@ -20,8 +20,6 @@ public class RestaurantRequestDto {
     @NotEmpty(message = "UrlLogo may not be empty")
     private String urlLogo;
     @NotNull(message = "IdOwner may not be empty")
-    //@Min(value = 1, message = "Owner id must not be less than 1")
-    //@Max(value = 4, message = "Owner id must not be greater than 4")
     private Long idOwner;
     @NotEmpty(message = "DniNumber may not be empty")
     @Pattern(regexp = "^[0-9]{1,20}$", message = "The dniNumber is not valid")
