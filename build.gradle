@@ -50,11 +50,11 @@ jacocoTestReport {
 	}
 	afterEvaluate {
 		classDirectories.setFrom(files(classDirectories.files.collect{
-			fileTree(dir: it, exclude: ['com/pragma/powerup/smallsquareservice/configuration',
-										'com/pragma/powerup/smallsquareservice/adapters/driven/jpa/mysql/mappers',
-										'com/pragma/powerup/smallsquareservice/adapters/driving/http/mapper',
-										'com/pragma/powerup/smallsquareservice/domain/model',
-										'com/pragma/powerup/smallsquareservice/adapters/driving/http/dto/response'])
+			fileTree(dir: it, exclude: ['com/pragma/powerup/smallsquaremicroservice/configuration',
+										'com/pragma/powerup/smallsquaremicroservice/adapters/driven/jpa/mysql/mappers',
+										'com/pragma/powerup/smallsquaremicroservice/adapters/driving/http/mapper',
+										'com/pragma/powerup/smallsquaremicroservice/domain/model',
+										'com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response'])
 		}))
 	}
 }
