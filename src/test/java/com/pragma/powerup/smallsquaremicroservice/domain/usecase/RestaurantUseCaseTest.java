@@ -62,7 +62,7 @@ class RestaurantUseCaseTest {
     public void saveRestaurant_invalidRoleUser() {
         // Arrange
         Restaurant restaurant = new Restaurant();
-        restaurant.setIdOwner(123L);
+        restaurant.setIdOwner(123L);// Se pasa el id de un usuario que no tiene rol de propietario
 
         User user = new User();
         user.setIdRole(456L); // Rol incorrecto
