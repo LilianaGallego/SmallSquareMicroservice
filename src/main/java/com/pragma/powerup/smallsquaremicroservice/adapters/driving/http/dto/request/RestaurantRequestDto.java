@@ -1,12 +1,16 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request;
 
-import jakarta.persistence.Column;
+
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
+@Setter
 public class RestaurantRequestDto {
 
     @NotEmpty(message = "Name may not be empty")
