@@ -21,7 +21,6 @@ public class RestaurantEntity {
     private String phone;
     private String urlLogo;
     private Long idOwner;
-
     @Column(unique = true, nullable = false, length = 20)
     private String dniNumber;
 

@@ -19,7 +19,6 @@ public class BeanConfiguration {
     private final IRestaurantEntityMapper restaurantEntityMapper;
 
 
-
     @Bean
     public IRestaurantServicePort restaurantServicePort() {
         return new RestaurantUseCase(restaurantPersistencePort());
