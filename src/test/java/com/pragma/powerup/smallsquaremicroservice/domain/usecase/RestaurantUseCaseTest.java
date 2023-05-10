@@ -1,6 +1,6 @@
 package com.pragma.powerup.smallsquaremicroservice.domain.usecase;
 
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.controller.OwnerRestController;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.OwnerHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.UserNotRoleOwnerException;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
@@ -21,35 +21,36 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
+@SuppressWarnings("ALL")
 @ExtendWith(MockitoExtension.class)
 class RestaurantUseCaseTest {
 
     @Mock
     private IRestaurantPersistencePort restaurantPersistencePort;
     @Mock
-    private OwnerRestController ownerRestController;
+    private OwnerHttpAdapter ownerHttpAdapter;
     @InjectMocks
     private RestaurantUseCase restaurantUseCase;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testSaveRestaurant()  {
+    void testSaveRestaurant()  {
         // Arrange
-        User user = new User(10L,"Lili", "Gallego","lili@gmail.com","288383",
+        User user = new User("Lili", "Gallego","lili@gmail.com","288383",
                 new Date(1989, 3, 4),"12345","123456",Constants.OWNER_ROLE_ID);
 
 
         Restaurant restaurant = new Restaurant(10L,"Las delicias de la 5ta","clle 19 N°19-22",
                 "18181818",
                 "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
-                user.getId(), "199191919");
+                10L, "199191919");
 
 
-        Mockito.when(ownerRestController.createRestaurant((10L))).thenReturn(user);
+        Mockito.when(ownerHttpAdapter.getOwner((10L))).thenReturn(user);
         restaurantPersistencePort.saveRestaurant(restaurant);
         // Act
         restaurantUseCase.saveRestaurant(restaurant);
@@ -59,7 +60,7 @@ class RestaurantUseCaseTest {
     }
 
     @Test
-    public void saveRestaurant_invalidRoleUser() {
+    void saveRestaurant_invalidRoleUser() {
         // Arrange
         Restaurant restaurant = new Restaurant();
         restaurant.setIdOwner(123L);// Se pasa el id de un usuario que no tiene rol de propietario
@@ -67,7 +68,7 @@ class RestaurantUseCaseTest {
         User user = new User();
         user.setIdRole(456L); // Rol incorrecto
 
-        Mockito.when(ownerRestController.createRestaurant(123L)).thenReturn(user);
+        Mockito.when(ownerHttpAdapter.getOwner(123L)).thenReturn(user);
 
         try {
             // Act
