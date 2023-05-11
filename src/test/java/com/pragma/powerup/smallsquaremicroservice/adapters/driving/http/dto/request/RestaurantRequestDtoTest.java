@@ -14,7 +14,7 @@ class RestaurantRequestDtoTest {
     @Test
     void testValidation_ValidDto() {
         // Arrange
-        RestaurantRequestDto dto = new RestaurantRequestDto("La ricuras de la 5ta","calle 19 N°19-22",
+        RestaurantRequestDto dto = new RestaurantRequestDto("Las ricuras de la 5ta","calle 19 N°19-22",
                 "18181818",
                 "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
                 10L, "199191919");
@@ -46,7 +46,7 @@ class RestaurantRequestDtoTest {
         Set<ConstraintViolation<RestaurantRequestDto>> violations = validator.validate(restaurantRequestDto);
 
         // Assert
-        assertEquals(7, violations.size());
+        assertEquals(6, violations.size());
         for (ConstraintViolation<RestaurantRequestDto> violation : violations) {
             System.out.println(violation.getMessage());
         }
