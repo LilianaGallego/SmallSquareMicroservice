@@ -54,7 +54,9 @@ jacocoTestReport {
 										'com/pragma/powerup/smallsquaremicroservice/adapters/driven/jpa/mysql/mappers',
 										'com/pragma/powerup/smallsquaremicroservice/adapters/driving/http/mapper',
 										'com/pragma/powerup/smallsquaremicroservice/domain/model',
-										'com/pragma/powerup/smallsquaremicroservice/adapters/driving/http/dto/response'])
+										'com/pragma/powerup/smallsquaremicroservice/adapters/driving/http/dto/response',
+										'com/pragma/powerup/smallsquaremicroservice/adapters/driven/jpa/mysql/exceptions',
+										'com/pragma/powerup/smallsquaremicroservice/adapters/driven/jpa/mysql/adapter',])
 		}))
 	}
 }
