@@ -2,7 +2,6 @@ package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handler
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.RestaurantRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IRestaurantRequestMapper;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IRestaurantResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,10 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import java.time.LocalDate;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -26,8 +21,6 @@ class RestaurantHandlerImplTest {
     @Mock
     private IRestaurantRequestMapper restaurantRequestMapper;
 
-    @Mock
-    private IRestaurantResponseMapper restaurantResponseMapper;
 
     @BeforeEach
     public void setUp() {
@@ -36,7 +29,7 @@ class RestaurantHandlerImplTest {
     }
 
     @Test
-    public void saveUser_ShouldCallSaveUserInServicePort() {
+    void saveUser_ShouldCallSaveUserInServicePort() {
         // Arrange
         RestaurantRequestDto dto = new RestaurantRequestDto("Las delicias de la 5ta","clle 19 N°19-22",
                 "18181818",

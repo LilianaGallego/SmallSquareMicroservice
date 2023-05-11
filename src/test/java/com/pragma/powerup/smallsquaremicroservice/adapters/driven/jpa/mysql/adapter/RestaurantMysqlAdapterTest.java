@@ -4,9 +4,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.enti
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.RestaurantAlreadyExistsException;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IRestaurantEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
-import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
-import com.pragma.powerup.smallsquaremicroservice.domain.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,20 +36,19 @@ class RestaurantMysqlAdapterTest {
 
     @Test
     @DisplayName("Given a user when saveRestaurant then save the user in the repository")
-    public void saveRestaurantTest() {
+    void saveRestaurantTest() {
         // Arrange
-        User user = new User(10L,"Lili", "Gallego","lili@gmail.com","288383",
-                new Date(1989, 3, 4),"12345","123456", Constants.OWNER_ROLE_ID);
+
 
         Restaurant restaurant = new Restaurant(10L,"Las delicias de la 5ta","clle 19 N°19-22",
                 "18181818",
                 "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
-                user.getId(), "199191919");
+                10L, "199191919");
 
         RestaurantEntity restaurantEntity = new RestaurantEntity(10L,"Las delicias de la 5ta","clle 19 N°19-22",
                 "18181818",
                 "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
-                user.getId(), "199191919");
+                10L, "199191919");
 
 
         Mockito.when(restaurantRepository.findByDniNumber(restaurant.getDniNumber())).thenReturn(Optional.empty());
@@ -68,20 +64,19 @@ class RestaurantMysqlAdapterTest {
 
     @Test
     @DisplayName("Given an existing restaurant dni number when saveRestaurant then throw RestaurantAlreadyExistsException")
-    public void saveRestaurantWithExistingDniNumberTest() {
+    void saveRestaurantWithExistingDniNumberTest() {
         // Arrange
-        User user = new User(1L,"Lili", "Gallego","lili@gmail.com","288383",
-                new Date(1989, 3, 4),"12345","123456", Constants.OWNER_ROLE_ID);
+
 
         Restaurant restaurant = new Restaurant(10L,"Las delicias de la 5ta","clle 19 N°19-22",
                 "18181818",
                 "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
-                user.getId(), "199191919");
+                10L, "199191919");
 
         RestaurantEntity restaurantEntity = new RestaurantEntity(10L,"Las delicias de la 5ta","clle 19 N°19-22",
                 "18181818",
                 "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
-                user.getId(), "199191919");
+                10L, "199191919");
 
         when(restaurantRepository.findByDniNumber(restaurant.getDniNumber())).thenReturn(Optional.of(restaurantEntity));
 
