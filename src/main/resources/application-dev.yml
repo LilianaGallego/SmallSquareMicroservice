@@ -16,3 +16,7 @@ management:
     web:
       exposure:
         include: "*"
+
+my:
+  variables:
+    url: "http://localhost:8080/user/owner/getOwnerById/"
