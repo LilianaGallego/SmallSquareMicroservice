@@ -1,7 +1,6 @@
 package com.pragma.powerup.smallsquaremicroservice.configuration;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IRestaurantEntityMapper;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.controller.OwnerRestController;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.usecase.RestaurantUseCase;
