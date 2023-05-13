@@ -1,6 +1,5 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
