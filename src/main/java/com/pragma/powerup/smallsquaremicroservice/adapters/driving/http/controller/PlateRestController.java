@@ -1,6 +1,7 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.controller;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.PlateRequestDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.UpdatePlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IPlateHandler;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,10 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Map;
@@ -36,5 +34,19 @@ public class PlateRestController {
         plateHandler.savePlate(plateRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.PLATE_CREATED_MESSAGE));
+    }
+
+    @Operation(summary = "Updated plate",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Updated plate",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
+                    @ApiResponse(responseCode = "409", description = "Plate no exists",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+            })
+    @PatchMapping("/updatePlate/{idPlate}")
+    public ResponseEntity<Map<String, String>> updatePlate( @PathVariable Long idPlate, @RequestBody UpdatePlateRequestDto updatePlateRequesDto) {
+        plateHandler.updatePlate(idPlate,updatePlateRequesDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.PLATE_UPDATED_MESSAGE));
     }
 }
