@@ -59,6 +59,8 @@ To get a local copy up and running follow these steps:
    ![img.png](img/img3.png)
 - Create plate
 ![img.png](img/img7.png)
+- Update plate
+![img.png](img/img8.png)
 
 <!-- ROADMAP -->
 ## Tests
