@@ -27,6 +27,9 @@ public class Constants {
     public static final String CATEGORY_ALREADY_EXISTS_MESSAGE = "A Category already exists with the name provided";
     public static final String CATEGORY_NOT_EXIST_MESSAGE = "The Category not exists";
     public static final String RESTAURANT_NOT_FOUND_MESSAGE = "No Restaurant found with the role provided";
+
+    public static final String DESCRIPTION_REQUIRED_MESSAGE = "Description is required";
+    public static final String URL_IMAGE_REQUIRED_MESSAGE = "UrlImage is required";
     public static final String SWAGGER_TITLE_MESSAGE = "SmallSquare API Pragma Power Up";
     public static final String USER_NOT_ROLE_OWNER = "User does not have owner role";
     public static final String SWAGGER_DESCRIPTION_MESSAGE = "SmallSquare microservice";
