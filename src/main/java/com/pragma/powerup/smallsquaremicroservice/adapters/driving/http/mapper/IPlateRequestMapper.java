@@ -1,7 +1,6 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.PlateRequestDto;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.PlateResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Plate;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
