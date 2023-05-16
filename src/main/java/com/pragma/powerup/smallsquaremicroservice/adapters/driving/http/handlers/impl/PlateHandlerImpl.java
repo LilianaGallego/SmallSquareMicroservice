@@ -1,6 +1,7 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.impl;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.PlateRequestDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.UpdatePlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IPlateHandler;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IPlateRequestMapper;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IPlateServicePort;
@@ -21,5 +22,10 @@ public class PlateHandlerImpl implements IPlateHandler {
     public void savePlate(PlateRequestDto plateRequestDto) {
 
         plateServicePort.savePlate(plateRequestMapper.toPlate(plateRequestDto));
+    }
+
+    @Override
+    public void updatePlate(Long idPlate, UpdatePlateRequestDto updatePlateRequestDto) {
+        plateServicePort.updatePlate(idPlate, updatePlateRequestDto);
     }
 }

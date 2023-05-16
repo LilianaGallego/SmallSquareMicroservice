@@ -135,4 +135,11 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.URL_IMAGE_REQUIRED_MESSAGE));
     }
+
+    @ExceptionHandler(PlateNotExistException.class)
+    public ResponseEntity<Map<String, String>> handlePlateNotExistException(
+            PlateNotExistException plateNotExistException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.PLATE_NOT_EXIST_MESSAGE));
+    }
 }
