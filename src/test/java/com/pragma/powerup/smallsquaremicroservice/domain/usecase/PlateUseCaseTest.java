@@ -2,31 +2,20 @@ package com.pragma.powerup.smallsquaremicroservice.domain.usecase;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.ICategoryRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.OwnerHttpAdapter;
-import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
-import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.DescriptionRequiredException;
-import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.NameRequiredException;
-import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.PlatePriceNotValidException;
-import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.UrlImageRequiredException;
+import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Category;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Plate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
-import com.pragma.powerup.smallsquaremicroservice.domain.model.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IPlatePersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Date;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -159,10 +148,59 @@ class PlateUseCaseTest {
     }
 
     @Test
-    void validateRestaurantId() {
+    void testValidateRestaurantId_ExistingRestaurantId_ShouldNotThrowException() {
+
+        Restaurant restaurant = new Restaurant(10L,"Las delicias de la 5ta","clle 19 N°19-22",
+                "18181818",
+                "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
+                10L, "199191919");
+
+        // Act
+        Mockito.when(restaurantRepository.existsById(10L)).thenReturn(true);
+
+
+        // Assert
+        Assertions.assertDoesNotThrow(() -> {
+            plateUseCase.validateRestaurantId(restaurant.getId());
+        });
+    }
+
+    @Test
+    void testValidateRestaurantId_NonExistingRestaurantId_ShouldThrowRestaurantNotExistException() {
+        // Arrange
+        Long restaurantId = 1L;
+        Mockito.when(restaurantRepository.existsById(restaurantId)).thenReturn(false);
+
+        //Act && Assert
+        Assertions.assertThrows(RestaurantNotExistException.class, () -> {
+            plateUseCase.validateRestaurantId(restaurantId);
+        });
     }
 
     @Test
     void validateCategoryId() {
+
+        Category category = new Category(1L,"Entrada","Papitas chips");
+
+        // Act
+
+        Mockito.when(categoryRepository.existsById(1L)).thenReturn(true);
+
+        // Assert
+        Assertions.assertDoesNotThrow(() -> {
+            plateUseCase.validateCategoryId(category.getId());
+        });
+    }
+
+    @Test
+    void testValidateCategorytId_NonExistinCgategoryId_ShouldThrowCategoryNotExistException() {
+        // Arrange
+        Long categoryId = 1L;
+        Mockito.when(categoryRepository.existsById(categoryId)).thenReturn(false);
+
+        //Act && Assert
+        Assertions.assertThrows(CategoryNotExistException.class, () -> {
+            plateUseCase.validateCategoryId(categoryId);
+        });
     }
 }
