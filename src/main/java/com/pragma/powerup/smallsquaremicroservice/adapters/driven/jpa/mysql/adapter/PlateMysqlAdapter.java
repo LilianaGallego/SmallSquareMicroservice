@@ -1,6 +1,6 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.adapter;
 
-import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.RestaurantAlreadyExistsException;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.PlateAlreadyExistsException;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IPlateEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IPlateRepository;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Plate;
@@ -17,7 +17,7 @@ public class PlateMysqlAdapter implements IPlatePersistencePort {
     public void savePlate(Plate plate) {
 
         if(plateRepository.findByName(plate.getName()).isPresent()){
-            throw new RestaurantAlreadyExistsException();
+            throw new PlateAlreadyExistsException();
         }
 
         plateRepository.save(iPlateEntityMapper.toEntity(plate));
