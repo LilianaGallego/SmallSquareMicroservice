@@ -46,7 +46,7 @@ public class PlateRestController {
     @PatchMapping("/updatePlate/{idPlate}")
     public ResponseEntity<Map<String, String>> updatePlate( @PathVariable Long idPlate, @RequestBody UpdatePlateRequestDto updatePlateRequesDto) {
         plateHandler.updatePlate(idPlate,updatePlateRequesDto);
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.PLATE_UPDATED_MESSAGE));
     }
 }
