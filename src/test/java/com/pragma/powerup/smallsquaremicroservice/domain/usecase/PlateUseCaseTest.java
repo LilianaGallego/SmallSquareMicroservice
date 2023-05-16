@@ -32,7 +32,7 @@ class PlateUseCaseTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         plateUseCase = new PlateUseCase(platePersistencePort, restaurantRepository, categoryRepository);
     }
 
@@ -64,9 +64,7 @@ class PlateUseCaseTest {
         String validName = "papitas chip";
 
         // Act & Assert
-        Assertions.assertDoesNotThrow(() -> {
-            plateUseCase.validateName(validName);
-        });
+        Assertions.assertDoesNotThrow(() -> plateUseCase.validateName(validName));
     }
 
     @Test
@@ -75,9 +73,7 @@ class PlateUseCaseTest {
         String emptyName = "";
 
         // Act & Assert
-        Assertions.assertThrows(NameRequiredException.class, () -> {
-            plateUseCase.validateName(emptyName);
-        });
+        Assertions.assertThrows(NameRequiredException.class, () -> plateUseCase.validateName(emptyName));
     }
 
     @Test
@@ -86,9 +82,7 @@ class PlateUseCaseTest {
         int price = 100;
 
         // Act & Assert
-        Assertions.assertDoesNotThrow(() -> {
-            plateUseCase.validatePrice(price);
-        });
+        Assertions.assertDoesNotThrow(() -> plateUseCase.validatePrice(price));
     }
 
     @Test
@@ -97,9 +91,7 @@ class PlateUseCaseTest {
         int badPrice = 0;
 
         // Act & Assert
-        Assertions.assertThrows(PlatePriceNotValidException.class, () -> {
-            plateUseCase.validatePrice(badPrice);
-        });
+        Assertions.assertThrows(PlatePriceNotValidException.class, () -> plateUseCase.validatePrice(badPrice));
     }
 
 
@@ -109,9 +101,7 @@ class PlateUseCaseTest {
         String validateDescription = "papitas chip";
 
         // Act & Assert
-        Assertions.assertDoesNotThrow(() -> {
-            plateUseCase.validateDescription(validateDescription);
-        });
+        Assertions.assertDoesNotThrow(() -> plateUseCase.validateDescription(validateDescription));
     }
 
     @Test
@@ -120,9 +110,7 @@ class PlateUseCaseTest {
         String emptyDescription = "";
 
         // Act & Assert
-        Assertions.assertThrows(DescriptionRequiredException.class, () -> {
-            plateUseCase.validateDescription(emptyDescription);
-        });
+        Assertions.assertThrows(DescriptionRequiredException.class, () -> plateUseCase.validateDescription(emptyDescription));
     }
 
     @Test
@@ -131,9 +119,7 @@ class PlateUseCaseTest {
         String validateUrlImage = "url";
 
         // Act & Assert
-        Assertions.assertDoesNotThrow(() -> {
-            plateUseCase.validateUrlImage(validateUrlImage);
-        });
+        Assertions.assertDoesNotThrow(() -> plateUseCase.validateUrlImage(validateUrlImage));
     }
 
     @Test
@@ -142,9 +128,7 @@ class PlateUseCaseTest {
         String emptyUrlImage = "";
 
         // Act & Assert
-        Assertions.assertThrows(UrlImageRequiredException.class, () -> {
-            plateUseCase.validateUrlImage(emptyUrlImage);
-        });
+        Assertions.assertThrows(UrlImageRequiredException.class, () -> plateUseCase.validateUrlImage(emptyUrlImage));
     }
 
     @Test
@@ -160,9 +144,7 @@ class PlateUseCaseTest {
 
 
         // Assert
-        Assertions.assertDoesNotThrow(() -> {
-            plateUseCase.validateRestaurantId(restaurant.getId());
-        });
+        Assertions.assertDoesNotThrow(() -> plateUseCase.validateRestaurantId(restaurant.getId()));
     }
 
     @Test
@@ -172,9 +154,7 @@ class PlateUseCaseTest {
         Mockito.when(restaurantRepository.existsById(restaurantId)).thenReturn(false);
 
         //Act && Assert
-        Assertions.assertThrows(RestaurantNotExistException.class, () -> {
-            plateUseCase.validateRestaurantId(restaurantId);
-        });
+        Assertions.assertThrows(RestaurantNotExistException.class, () -> plateUseCase.validateRestaurantId(restaurantId));
     }
 
     @Test
@@ -187,9 +167,7 @@ class PlateUseCaseTest {
         Mockito.when(categoryRepository.existsById(1L)).thenReturn(true);
 
         // Assert
-        Assertions.assertDoesNotThrow(() -> {
-            plateUseCase.validateCategoryId(category.getId());
-        });
+        Assertions.assertDoesNotThrow(() -> plateUseCase.validateCategoryId(category.getId()));
     }
 
     @Test
@@ -199,8 +177,6 @@ class PlateUseCaseTest {
         Mockito.when(categoryRepository.existsById(categoryId)).thenReturn(false);
 
         //Act && Assert
-        Assertions.assertThrows(CategoryNotExistException.class, () -> {
-            plateUseCase.validateCategoryId(categoryId);
-        });
+        Assertions.assertThrows(CategoryNotExistException.class, () -> plateUseCase.validateCategoryId(categoryId));
     }
 }
