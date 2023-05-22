@@ -6,6 +6,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.enti
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.ICategoryRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IPlateRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.UpdatePlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Category;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Plate;
@@ -22,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.times;
 
@@ -218,5 +220,39 @@ class PlateUseCaseTest {
 
         //Act && Assert
         Assertions.assertThrows(CategoryNotExistException.class, () -> plateUseCase.validateCategoryId(categoryId));
+    }
+
+    @Test
+    void testUpdatePlate_ExistingPlate_ShouldUpdatePlate() {
+        // Arrange
+        Long idPlate = 1L;
+        UpdatePlateRequestDto updatePlateRequestDto = new UpdatePlateRequestDto();
+        updatePlateRequestDto.setDescription("Alitas con salsa BBQ");
+        updatePlateRequestDto.setPrice(5000);
+
+        PlateEntity plateEntity = new PlateEntity();
+        plateEntity.setId(idPlate);
+        plateEntity.setDescription("Alistas a la broster");
+        plateEntity.setPrice(500);
+
+        //Act
+        Mockito.when(plateRepository.findById(idPlate)).thenReturn(Optional.of(plateEntity));
+
+        // Assert
+        plateUseCase.updatePlate(idPlate, updatePlateRequestDto);
+    }
+
+    @Test
+    void testUpdatePlate_NonExistingPlate_ShouldThrowPlateNotExistException() {
+        // Arrange
+        Long idPlate = 1L;
+        UpdatePlateRequestDto updatePlateRequestDto = new UpdatePlateRequestDto();
+        updatePlateRequestDto.setDescription("New description");
+        updatePlateRequestDto.setPrice(10000);
+
+        Mockito.when(plateRepository.findById(idPlate)).thenReturn(Optional.empty());
+
+        // Act
+        Assertions.assertThrows(PlateNotExistException.class, () -> plateUseCase.updatePlate(idPlate,updatePlateRequestDto));
     }
 }
