@@ -17,6 +17,7 @@ public class PlateUseCase  implements IPlateServicePort {
     private final IPlatePersistencePort platePersistencePort;
     private final IRestaurantRepository restaurantRepository;
     private final ICategoryRepository categoryRepository;
+    private final IPlateRepository plateRepository;
 
     public PlateUseCase(IPlatePersistencePort platePersistencePort, IPlateRepository plateRepository, IRestaurantRepository restaurantRepository, ICategoryRepository categoryRepository) {
         this.platePersistencePort = platePersistencePort;
