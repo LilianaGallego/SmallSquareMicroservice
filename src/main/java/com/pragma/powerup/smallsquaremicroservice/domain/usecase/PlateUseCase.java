@@ -15,8 +15,6 @@ import java.util.List;
 
 public class PlateUseCase  implements IPlateServicePort {
     private final IPlatePersistencePort platePersistencePort;
-    private final IPlateRepository plateRepository;
-
     private final IRestaurantRepository restaurantRepository;
     private final ICategoryRepository categoryRepository;
 
@@ -26,7 +24,6 @@ public class PlateUseCase  implements IPlateServicePort {
         this.restaurantRepository = restaurantRepository;
         this.categoryRepository = categoryRepository;
     }
-
 
     @Override
     public void savePlate(Plate plate) {
@@ -96,6 +93,7 @@ public class PlateUseCase  implements IPlateServicePort {
             throw new CategoryNotExistException();
         }
     }
+
 
     @Override
     public void updatePlate(Long idPlate, UpdatePlateRequestDto updatePlateRequestDto) {

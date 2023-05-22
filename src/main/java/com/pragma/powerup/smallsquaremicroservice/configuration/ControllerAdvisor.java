@@ -46,32 +46,12 @@ public class ControllerAdvisor {
 
     }
 
-    @ExceptionHandler(PlateAlreadyExistsException.class)
-    public ResponseEntity<Map<String, String>> handlePlateAlreadyExistsException(
-            PlateAlreadyExistsException plateAlreadyExistsException) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.PLATE_ALREADY_EXISTS_MESSAGE));
-    }
-
-    @ExceptionHandler(CategoryAlreadyExistsException.class)
-    public ResponseEntity<Map<String, String>> handleCategoryAlreadyExistsException(
-            CategoryAlreadyExistsException categoryAlreadyExistsException) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.CATEGORY_ALREADY_EXISTS_MESSAGE));
-    }
 
     @ExceptionHandler(RestaurantNotExistException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantNotExistException(
             RestaurantNotExistException restaurantNotExistException) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.RESTAURANT_NOT_EXIST_MESSAGE));
-    }
-
-    @ExceptionHandler(CategoryNotExistException.class)
-    public ResponseEntity<Map<String, String>> handleCategoryNotExistException(
-            CategoryNotExistException categoryNotExistException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.CATEGORY_NOT_EXIST_MESSAGE));
     }
 
     @ExceptionHandler(NameRequiredException.class)
@@ -114,32 +94,5 @@ public class ControllerAdvisor {
             DniNumberRequiredException dniNumberRequiredException) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.DNI_NUMBER_REQUIRED_MESSAGE));
-    }
-
-    @ExceptionHandler(PlatePriceNotValidException.class)
-    public ResponseEntity<Map<String, String>> handlePlatePriceNotValidException(
-            PlatePriceNotValidException platePriceNotValidException) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.PLATE_PRICE_NOT_VALID_MESSAGE));
-    }
-    @ExceptionHandler(DescriptionRequiredException.class)
-    public ResponseEntity<Map<String, String>> handleDescriptionRequiredException(
-            DescriptionRequiredException descriptionRequiredException) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.DESCRIPTION_REQUIRED_MESSAGE));
-    }
-
-    @ExceptionHandler(UrlImageRequiredException.class)
-    public ResponseEntity<Map<String, String>> handleUrlImageRequiredException(
-            UrlImageRequiredException urlImageRequiredException) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.URL_IMAGE_REQUIRED_MESSAGE));
-    }
-
-    @ExceptionHandler(PlateNotExistException.class)
-    public ResponseEntity<Map<String, String>> handlePlateNotExistException(
-            PlateNotExistException plateNotExistException) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.PLATE_NOT_EXIST_MESSAGE));
     }
 }
