@@ -1,21 +1,22 @@
 package com.pragma.powerup.smallsquaremicroservice.domain.usecase;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.PlateEntity;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.PlateAlreadyExistsException;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.ICategoryRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IPlateRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.UpdatePlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IPlateServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Plate;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IPlatePersistencePort;
 
+import java.util.List;
+
 public class PlateUseCase  implements IPlateServicePort {
     private final IPlatePersistencePort platePersistencePort;
-    private final IPlateRepository plateRepository;
-
     private final IRestaurantRepository restaurantRepository;
     private final ICategoryRepository categoryRepository;
+    private final IPlateRepository  plateRepository;
 
     public PlateUseCase(IPlatePersistencePort platePersistencePort, IPlateRepository plateRepository, IRestaurantRepository restaurantRepository, ICategoryRepository categoryRepository) {
         this.platePersistencePort = platePersistencePort;
@@ -23,7 +24,6 @@ public class PlateUseCase  implements IPlateServicePort {
         this.restaurantRepository = restaurantRepository;
         this.categoryRepository = categoryRepository;
     }
-
 
     @Override
     public void savePlate(Plate plate) {
@@ -33,7 +33,7 @@ public class PlateUseCase  implements IPlateServicePort {
         validatePrice(plate.getPrice());
         validateDescription(plate.getDescription());
         validateUrlImage(plate.getUrlImage());
-        validateRestaurantId(plate.getRestaurant().getId());
+        validateRestaurantId(plate.getRestaurant().getId(),plate);
         validateCategoryId(plate.getCategory().getId());
         platePersistencePort.savePlate(plate);
 
@@ -72,10 +72,18 @@ public class PlateUseCase  implements IPlateServicePort {
 
 
     @Override
-    public void validateRestaurantId(Long restaurantId) {
+    public void validateRestaurantId(Long restaurantId, Plate plate) {
         if (!restaurantRepository.existsById(restaurantId)) {
             throw new RestaurantNotExistException();
         }
+
+        List<PlateEntity> dishes = plateRepository.findAllByRestaurantEntityId(restaurantId);
+        dishes.forEach(d -> {
+            if(d.getName().equals(plate.getName())){
+                throw new PlateAlreadyExistsException();
+            }
+        });
+
     }
 
     @Override
@@ -84,19 +92,6 @@ public class PlateUseCase  implements IPlateServicePort {
         if (!categoryRepository.existsById(categoryId)) {
             throw new CategoryNotExistException();
         }
-    }
-
-    @Override
-    public void updatePlate(Long idPlate, UpdatePlateRequestDto updatePlateRequestDto) {
-        PlateEntity plate = plateRepository.findById(idPlate)
-                .orElseThrow(PlateNotExistException::new);
-        if(plateRepository.findById(idPlate).isPresent()){
-            plate.setDescription(updatePlateRequestDto.getDescription());
-            plate.setPrice(updatePlateRequestDto.getPrice());
-
-            plateRepository.save(plate);
-        }
-
     }
 
 }

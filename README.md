@@ -7,6 +7,7 @@
   </p >
    <p align="justify">
       The implementation of this microservice begins with the creation of the restaurant that a user with owner role must have and the creation of a dish that belongs to a restaurant and that has an assigned category.
+
    </p>
 
 </div>
@@ -54,6 +55,7 @@ To get a local copy up and running follow these steps:
 4. Run the microservice by right clicking on the UserMicroserviceApplication file and then on run
 5. The port on which the microservice runs is 8080 which can be modified by entering the application-dev.yml file.
 6. The documentation of the code is in the following link
+
 - Create restaurant
    [http://localhost:9080/swagger-ui/index.html#](http://localhost:9080/swagger-ui/index.html) in your web browser
    ![img.png](img/img3.png)
@@ -61,6 +63,7 @@ To get a local copy up and running follow these steps:
 ![img.png](img/img7.png)
 - Update plate
 ![img.png](img/img8.png)
+
 
 <!-- ROADMAP -->
 ## Tests

@@ -9,5 +9,6 @@ import java.util.Optional;
 public interface IRestaurantRepository extends JpaRepository<RestaurantEntity, Long> {
     Optional<RestaurantEntity> findByDniNumber(String dniNumber);
     List<RestaurantEntity> findAllById(Long idUser);
+    boolean existsById(Long id);
 
 }
