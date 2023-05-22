@@ -5,6 +5,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exce
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.ICategoryRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IPlateRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.UpdatePlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IPlateServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Plate;
@@ -92,6 +93,20 @@ public class PlateUseCase  implements IPlateServicePort {
         if (!categoryRepository.existsById(categoryId)) {
             throw new CategoryNotExistException();
         }
+    }
+
+
+    @Override
+    public void updatePlate(Long idPlate, UpdatePlateRequestDto updatePlateRequestDto) {
+        PlateEntity plate = plateRepository.findById(idPlate)
+                .orElseThrow(PlateNotExistException::new);
+        if(plateRepository.findById(idPlate).isPresent()){
+            plate.setDescription(updatePlateRequestDto.getDescription());
+            plate.setPrice(updatePlateRequestDto.getPrice());
+
+            plateRepository.save(plate);
+        }
+
     }
 
 }
