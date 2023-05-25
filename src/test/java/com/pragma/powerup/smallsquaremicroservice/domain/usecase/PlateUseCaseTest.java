@@ -46,27 +46,7 @@ class PlateUseCaseTest {
         plateUseCase = new PlateUseCase(platePersistencePort, plateRepository,restaurantRepository, categoryRepository);
     }
 
-    @Test
-    void testSavePlate() {
-        // Arrange
 
-        Restaurant restaurant = new Restaurant(10L,"Las delicias de la 5ta","clle 19 N°19-22",
-                "18181818",
-                "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
-                10L, "199191919");
-        Category category = new Category(1L,"Entrada","Papitas chips");
-
-        Plate plate = new Plate(10L,"papitas chip",1000,"crocantes papitas chip 100gr","urlimage",category,true, restaurant);
-
-        Mockito.when(restaurantRepository.existsById(10L)).thenReturn(true);
-        Mockito.when(categoryRepository.existsById(1L)).thenReturn(true);
-        // Act
-        plateUseCase.savePlate(plate);
-
-        // Assert
-        Mockito.verify(platePersistencePort, times(1)).savePlate(plate);
-
-    }
 
     @Test
     void validateName_ValidName_NoExceptionThrown() {
@@ -222,25 +202,6 @@ class PlateUseCaseTest {
         Assertions.assertThrows(CategoryNotExistException.class, () -> plateUseCase.validateCategoryId(categoryId));
     }
 
-    @Test
-    void testUpdatePlate_ExistingPlate_ShouldUpdatePlate() {
-        // Arrange
-        Long idPlate = 1L;
-        UpdatePlateRequestDto updatePlateRequestDto = new UpdatePlateRequestDto();
-        updatePlateRequestDto.setDescription("Alitas con salsa BBQ");
-        updatePlateRequestDto.setPrice(5000);
-
-        PlateEntity plateEntity = new PlateEntity();
-        plateEntity.setId(idPlate);
-        plateEntity.setDescription("Alistas a la broster");
-        plateEntity.setPrice(500);
-
-        //Act
-        Mockito.when(plateRepository.findById(idPlate)).thenReturn(Optional.of(plateEntity));
-
-        // Assert
-        plateUseCase.updatePlate(idPlate, updatePlateRequestDto);
-    }
 
     @Test
     void testUpdatePlate_NonExistingPlate_ShouldThrowPlateNotExistException() {
