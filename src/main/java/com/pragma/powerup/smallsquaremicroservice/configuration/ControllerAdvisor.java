@@ -1,6 +1,7 @@
 package com.pragma.powerup.smallsquaremicroservice.configuration;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.*;
+import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.TokenException;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -95,4 +96,20 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.DNI_NUMBER_REQUIRED_MESSAGE));
     }
+
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<Map<String, String>> handleTokenException(
+            TokenException tokenException) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.RESPONSE_ERROR_MESSAGE_TOKEN));
+    }
+
+    @ExceptionHandler(NotOwnerRestaurant.class)
+    public ResponseEntity<Map<String, String>> handleNotOwnerRestaurant(
+            NotOwnerRestaurant notOwnerRestaurant) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Collections.singletonMap(Constants.RESPONSE_ERROR_MESSAGE_KEY, Constants.NOT_OWNER_RESTAURANT));
+    }
+
+
 }
