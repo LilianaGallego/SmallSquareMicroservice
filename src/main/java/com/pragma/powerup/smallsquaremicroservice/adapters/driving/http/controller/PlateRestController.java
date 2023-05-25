@@ -31,7 +31,7 @@ public class PlateRestController {
                     @ApiResponse(responseCode = "409", description = "Plate already exists",
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
             })
-    @PostMapping("/createPlate")
+    @PostMapping("/plate/create")
     public ResponseEntity<Map<String, String>> savePlate(@RequestBody PlateRequestDto plateRequestDto) {
         plateHandler.savePlate(plateRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -45,7 +45,7 @@ public class PlateRestController {
                     @ApiResponse(responseCode = "409", description = "Plate no exists",
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
             })
-    @PatchMapping("/updatePlate/{idPlate}")
+    @PatchMapping("/plate/update/{idPlate}")
     public ResponseEntity<Map<String, String>> updatePlate( @PathVariable Long idPlate, @RequestBody UpdatePlateRequestDto updatePlateRequesDto) {
         plateHandler.updatePlate(idPlate,updatePlateRequesDto);
         return ResponseEntity.status(HttpStatus.OK)
