@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/smallsquare")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "jwt")
 public class PlateRestController {
     private final IPlateHandler plateHandler;
 
@@ -29,7 +31,7 @@ public class PlateRestController {
                     @ApiResponse(responseCode = "409", description = "Plate already exists",
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
             })
-    @PostMapping("/createPlate")
+    @PostMapping("/plate/create")
     public ResponseEntity<Map<String, String>> savePlate(@RequestBody PlateRequestDto plateRequestDto) {
         plateHandler.savePlate(plateRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -43,7 +45,7 @@ public class PlateRestController {
                     @ApiResponse(responseCode = "409", description = "Plate no exists",
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
             })
-    @PatchMapping("/updatePlate/{idPlate}")
+    @PatchMapping("/plate/update/{idPlate}")
     public ResponseEntity<Map<String, String>> updatePlate( @PathVariable Long idPlate, @RequestBody UpdatePlateRequestDto updatePlateRequesDto) {
         plateHandler.updatePlate(idPlate,updatePlateRequesDto);
         return ResponseEntity.status(HttpStatus.OK)

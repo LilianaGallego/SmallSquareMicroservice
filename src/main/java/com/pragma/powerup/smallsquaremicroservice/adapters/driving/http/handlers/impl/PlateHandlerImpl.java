@@ -8,7 +8,6 @@ import com.pragma.powerup.smallsquaremicroservice.domain.api.IPlateServicePort;
 import org.springframework.stereotype.Service;
 
 @Service
-
 public class PlateHandlerImpl implements IPlateHandler {
     private final IPlateServicePort  plateServicePort;
     private final IPlateRequestMapper plateRequestMapper;

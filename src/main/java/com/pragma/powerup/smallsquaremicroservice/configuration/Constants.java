@@ -11,14 +11,15 @@ public class Constants {
     public static final String RESTAURANT_CREATED_MESSAGE = "Restaurant created successfully";
     public static final String PLATE_CREATED_MESSAGE = "Plate created successfully";
     public static final String PLATE_UPDATED_MESSAGE = "Plate updated successfully";
-    public static final String CATEGORY_CREATED_MESSAGE = "Category created successfully";
     public static final String RESPONSE_ERROR_MESSAGE_KEY = "error";
+    public static final String RESPONSE_ERROR_MESSAGE_TOKEN= "A problem with the token has occurred";
     public static final String USER_NOT_FOUND_MESSAGE = "No user found with the role provided";
     public static final String NO_DATA_FOUND_MESSAGE = "No data found for the requested petition";
     public static final String NAME_REQUIRED_MESSAGE = "Name is required";
     public static final String ADDRESS_REQUIRED_MESSAGE = "Address is required";
     public static final String PHONE_REQUIRED_MESSAGE = "Phone is required";
     public static final String URL_LOGO_REQUIRED_MESSAGE = "UrlLogo is required";
+    public static final String NOT_OWNER_RESTAURANT= "The user is not the owner of this restaurant";
     public static final String IDOWNER_REQUIRED_MESSAGE = "IdOwner is required";
     public static final String DNI_NUMBER_REQUIRED_MESSAGE = "DniNumber is required";
     public static final String PLATE_PRICE_NOT_VALID_MESSAGE = "The price of the invalid dish must be greater than 0";
