@@ -15,19 +15,19 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class OwnerHttpAdapter {
     RestTemplate restTemplate = new RestTemplate();
-    TokenInterceptor tokenInterceptor = new TokenInterceptor();
     @Value("${my.variables.url}")
     String url;
 
 
     public User getOwner(Long id) {
         String urlId = url + id;
-        String token = tokenInterceptor.getAuthorizationToken();
+        String token = TokenInterceptor.getAuthorizationToken();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
         ResponseEntity<User> response;
+
         try {
             response = restTemplate.exchange(urlId, HttpMethod.GET, entity, User.class);
         } catch (HttpClientErrorException error) {
