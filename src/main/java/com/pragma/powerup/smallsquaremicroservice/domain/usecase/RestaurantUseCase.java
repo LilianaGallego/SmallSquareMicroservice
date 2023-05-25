@@ -25,7 +25,6 @@ public class RestaurantUseCase implements IRestaurantServicePort {
         Long id = restaurant.getIdOwner();
 
         User user = ownerHttpAdapter.getOwner(id);
-
         if (!user.getIdRole().equals(Constants.OWNER_ROLE_ID) ){
             throw new UserNotRoleOwnerException();
         }
