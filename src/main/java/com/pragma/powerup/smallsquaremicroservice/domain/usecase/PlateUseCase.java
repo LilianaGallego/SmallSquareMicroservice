@@ -115,8 +115,11 @@ public class PlateUseCase  implements IPlateServicePort {
     }
     @Override
     public void validateIdOwner(Long idRestaurant) {
-        Optional<RestaurantEntity> restaurantEntityOptional = restaurantRepository.findById(idRestaurant);
-
+        Optional<RestaurantEntity> restaurantEntityOptional ;
+        if(restaurantRepository.findById(idRestaurant).isEmpty()){
+            throw new RestaurantNotExistException();
+        }
+        restaurantEntityOptional = restaurantRepository.findById(idRestaurant);
         Long idOwnerToken = TokenInterceptor.getIdOwner();
         RestaurantEntity restaurantEntity = restaurantEntityOptional.get();
         if (!restaurantEntity.getIdOwner().equals(idOwnerToken)) {
