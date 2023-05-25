@@ -21,7 +21,6 @@ public class PlateUseCase  implements IPlateServicePort {
     private final IRestaurantRepository restaurantRepository;
     private final ICategoryRepository categoryRepository;
     private final IPlateRepository plateRepository;
-    TokenInterceptor tokenInterceptor = new TokenInterceptor();
 
     public PlateUseCase(IPlatePersistencePort platePersistencePort, IPlateRepository plateRepository, IRestaurantRepository restaurantRepository, ICategoryRepository categoryRepository) {
         this.platePersistencePort = platePersistencePort;
@@ -118,7 +117,7 @@ public class PlateUseCase  implements IPlateServicePort {
     public void validateIdOwner(Long idRestaurant) {
         Optional<RestaurantEntity> restaurantEntityOptional = restaurantRepository.findById(idRestaurant);
 
-        Long idOwnerToken = tokenInterceptor.getIdOwner();
+        Long idOwnerToken = TokenInterceptor.getIdOwner();
         RestaurantEntity restaurantEntity = restaurantEntityOptional.get();
         if (!restaurantEntity.getIdOwner().equals(idOwnerToken)) {
             throw new NotOwnerRestaurant();
