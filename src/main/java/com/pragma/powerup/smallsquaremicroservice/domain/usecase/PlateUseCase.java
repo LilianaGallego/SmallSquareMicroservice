@@ -70,7 +70,6 @@ public class PlateUseCase  implements IPlateServicePort {
         }
     }
 
-
     @Override
     public void validateRestaurantId(Long restaurantId, Plate plate) {
         if (!restaurantRepository.existsById(restaurantId)) {

@@ -10,7 +10,6 @@ public class Constants {
     public static final String RESPONSE_MESSAGE_KEY = "message";
     public static final String RESTAURANT_CREATED_MESSAGE = "Restaurant created successfully";
     public static final String PLATE_CREATED_MESSAGE = "Plate created successfully";
-    public static final String CATEGORY_CREATED_MESSAGE = "Category created successfully";
     public static final String RESPONSE_ERROR_MESSAGE_KEY = "error";
     public static final String USER_NOT_FOUND_MESSAGE = "No user found with the role provided";
     public static final String NO_DATA_FOUND_MESSAGE = "No data found for the requested petition";
