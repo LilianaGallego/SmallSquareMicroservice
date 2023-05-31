@@ -2,6 +2,7 @@ package com.pragma.powerup.smallsquaremicroservice.configuration;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.TokenException;
+import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.UserNotRoleAuthorized;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,14 @@ public class ControllerAdvisor {
             UserNotFoundException userNotFoundException) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, Constants.USER_NOT_FOUND_MESSAGE));
+
+    }
+
+    @ExceptionHandler(UserNotRoleAuthorized.class)
+    public ResponseEntity<Map<String, String>> handleUserNotRoleAuthorized(
+            UserNotRoleAuthorized userNotRoleAuthorized) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, Constants.USER_NOT_ROLE_AUTHORIZED));
 
     }
 

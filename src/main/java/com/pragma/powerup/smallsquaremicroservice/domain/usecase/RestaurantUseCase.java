@@ -7,8 +7,11 @@ import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IRestaurantServicePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.util.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class RestaurantUseCase implements IRestaurantServicePort {
@@ -90,6 +93,13 @@ public class RestaurantUseCase implements IRestaurantServicePort {
             throw new DniNumberRequiredException();
         }
 
+    }
+
+    @Override
+    public List<Restaurant> getAllRestaurants(int page, int pageSize) {
+        List<Restaurant> restaurants = restaurantPersistencePort.getAllRestaurants(page, pageSize);
+        restaurants.sort(Comparator.comparing(Restaurant::getName));
+        return  Pagination.paginate(restaurants, pageSize, page);
     }
 
 

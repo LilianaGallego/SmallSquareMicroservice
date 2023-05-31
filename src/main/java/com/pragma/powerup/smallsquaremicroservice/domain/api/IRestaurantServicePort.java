@@ -2,6 +2,8 @@ package com.pragma.powerup.smallsquaremicroservice.domain.api;
 
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 
+import java.util.List;
+
 public interface IRestaurantServicePort {
     void saveRestaurant(Restaurant restaurant);
 
@@ -11,5 +13,6 @@ public interface IRestaurantServicePort {
     void validateUrlLogo(String urlLogo);
     void validateIdOwner(Long idOwner);
     void validateDniNumber(String dniNumber);
+    List<Restaurant> getAllRestaurants(int page, int pageSize);
 
 }

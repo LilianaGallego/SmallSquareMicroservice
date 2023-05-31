@@ -37,6 +37,7 @@ public class Constants {
     public static final String URL_IMAGE_REQUIRED_MESSAGE = "UrlImage is required";
     public static final String SWAGGER_TITLE_MESSAGE = "SmallSquare API Pragma Power Up";
     public static final String USER_NOT_ROLE_OWNER = "User does not have owner role";
+    public static final String USER_NOT_ROLE_AUTHORIZED= "the user's role is not authorized";
     public static final String SWAGGER_DESCRIPTION_MESSAGE = "SmallSquare microservice";
     public static final String SWAGGER_VERSION_MESSAGE = "1.0.0";
     public static final String SWAGGER_LICENSE_NAME_MESSAGE = "Apache 2.0";

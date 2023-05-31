@@ -4,7 +4,7 @@ package com.pragma.powerup.smallsquaremicroservice.configuration.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.TokenException;
-import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.UserNotRoleOwnerException;
+import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.UserNotRoleAuthorized;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;
@@ -23,6 +23,8 @@ public class TokenInterceptor implements HandlerInterceptor {
     private static Long idOwner;
     private static final String OWNER= "ROLE_OWNER";
     private static final String ADMIN= "ROLE_ADMIN";
+    private static final String CONSUMER= "ROLE_CONSUMER";
+
 
     public static String getAuthorizationToken() {
         return token;
@@ -56,7 +58,12 @@ public class TokenInterceptor implements HandlerInterceptor {
         if (OWNER.equals(roleUser) && isOwner(request.getRequestURI())) {
             return true;
         }
-        throw new UserNotRoleOwnerException();
+
+        if (CONSUMER.equals(roleUser) && isClient(request.getRequestURI())) {
+            return true;
+        }
+
+        throw new UserNotRoleAuthorized();
     }
 
     private boolean isOwner(String requestURI) {
@@ -67,6 +74,11 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     private boolean isAdmin(String requestURI) {
         return requestURI.startsWith("/smallsquare/restaurant/");
+
+    }
+
+    private boolean isClient(String requestURI) {
+        return requestURI.startsWith("/smallsquare/restaurants/all/");
 
     }
 }
