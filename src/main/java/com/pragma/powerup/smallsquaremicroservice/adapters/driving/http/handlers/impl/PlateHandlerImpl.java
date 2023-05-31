@@ -27,4 +27,9 @@ public class PlateHandlerImpl implements IPlateHandler {
     public void updatePlate(Long idPlate, UpdatePlateRequestDto updatePlateRequestDto) {
         plateServicePort.updatePlate(idPlate, updatePlateRequestDto);
     }
+
+    @Override
+    public void updateStatusPlate(Long idPlate) {
+        plateServicePort.updateStatusPlate(idPlate);
+    }
 }

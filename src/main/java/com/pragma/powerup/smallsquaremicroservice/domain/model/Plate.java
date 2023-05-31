@@ -9,14 +9,15 @@ public class Plate {
     private String description;
     private String urlImage;
     private Category category;
-    private Boolean active;
+    private boolean active;
     private Restaurant restaurant;
 
 
     public Plate() {
     }
 
-    public Plate(Long id, String name, int price, String description, String urlImage, Category category, Boolean active, Restaurant restaurant) {
+    public Plate(Long id, String name, int price, String description, String urlImage, Category category, Boolean active,
+                 Restaurant restaurant ) {
         this.id = id;
         this.name = name;
         this.price = price;

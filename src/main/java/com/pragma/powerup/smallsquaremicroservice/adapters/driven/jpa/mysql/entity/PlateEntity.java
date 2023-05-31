@@ -27,4 +27,5 @@ public class PlateEntity {
     @ManyToOne
     @JoinColumn(name = "id_restaurant")
     private RestaurantEntity restaurantEntity;
+    private boolean active;
 }
