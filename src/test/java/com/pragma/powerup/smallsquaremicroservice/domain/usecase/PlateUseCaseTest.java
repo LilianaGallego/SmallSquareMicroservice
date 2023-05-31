@@ -13,12 +13,10 @@ import com.pragma.powerup.smallsquaremicroservice.domain.model.Category;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Plate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IPlatePersistencePort;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -227,7 +225,7 @@ class PlateUseCaseTest {
         RestaurantEntity restaurantEntity = new RestaurantEntity();
 
         List<PlateEntity> existingPlates = new ArrayList<>();
-        existingPlates.add(new PlateEntity(10L,"papitas chip",1000,"crocantes papitas chip 100gr","urlimage",categoryEntity, restaurantEntity));
+        existingPlates.add(new PlateEntity(10L,"papitas chip",1000,"crocantes papitas chip 100gr","urlimage",categoryEntity, restaurantEntity, true));
 
         when(restaurantRepository.existsById(restaurantId)).thenReturn(true);
         when(plateRepository.findAllByRestaurantEntityId(restaurantId)).thenReturn(existingPlates);
