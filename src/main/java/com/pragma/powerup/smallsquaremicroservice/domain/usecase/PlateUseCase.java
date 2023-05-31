@@ -113,6 +113,21 @@ public class PlateUseCase  implements IPlateServicePort {
         }
 
     }
+
+    @Override
+    public void updateStatusPlate(Long idPlate) {
+        PlateEntity plate = plateRepository.findById(idPlate)
+                .orElseThrow(PlateNotExistException::new);
+        validateIdOwner(plate.getRestaurantEntity().getId());
+        if(plateRepository.findById(idPlate).isPresent()){
+
+            plate.setActive(!plate.isActive());
+
+            plateRepository.save(plate);
+        }
+
+    }
+
     @Override
     public void validateIdOwner(Long idRestaurant) {
         Optional<RestaurantEntity> restaurantEntityOptional ;
@@ -126,5 +141,7 @@ public class PlateUseCase  implements IPlateServicePort {
             throw new NotOwnerRestaurant();
         }
     }
+
+
 
 }

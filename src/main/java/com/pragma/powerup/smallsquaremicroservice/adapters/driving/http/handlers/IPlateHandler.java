@@ -7,4 +7,6 @@ public interface IPlateHandler {
     void savePlate(PlateRequestDto plateRequestDto);
     void updatePlate(Long idPlate, UpdatePlateRequestDto updatePlateRequestDto);
 
+    void updateStatusPlate(Long idPlate);
+
 }

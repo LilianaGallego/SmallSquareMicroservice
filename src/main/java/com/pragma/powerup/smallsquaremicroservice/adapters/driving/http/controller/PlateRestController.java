@@ -51,4 +51,18 @@ public class PlateRestController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.PLATE_UPDATED_MESSAGE));
     }
+
+    @Operation(summary = "Updated status plate",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Updated plate",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
+                    @ApiResponse(responseCode = "409", description = "Plate no exists",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+            })
+    @PatchMapping("/plate/update/status/{idPlate}")
+    public ResponseEntity<Map<String, String>> updateStatusPlate( @PathVariable Long idPlate) {
+        plateHandler.updateStatusPlate(idPlate);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.PLATE_UPDATED_MESSAGE));
+    }
 }

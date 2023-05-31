@@ -13,7 +13,6 @@ public interface IPlateServicePort {
     void validateCategoryId(Long categoryId);
     void validateDescription(String description);
     void validateUrlImage(String urlLogo);
-
-
     void updatePlate(Long idPlate, UpdatePlateRequestDto updatePlateRequestDto);
+    void updateStatusPlate(Long idPlate);
 }
