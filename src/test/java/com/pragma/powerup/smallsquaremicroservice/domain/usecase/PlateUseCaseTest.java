@@ -225,7 +225,8 @@ class PlateUseCaseTest {
         RestaurantEntity restaurantEntity = new RestaurantEntity();
 
         List<PlateEntity> existingPlates = new ArrayList<>();
-        existingPlates.add(new PlateEntity(10L,"papitas chip",1000,"crocantes papitas chip 100gr","urlimage",categoryEntity, restaurantEntity, true));
+        existingPlates.add(new PlateEntity(10L,"papitas chip",1000,"crocantes papitas chip 100gr","urlimage",
+                categoryEntity, restaurantEntity, true));
 
         when(restaurantRepository.existsById(restaurantId)).thenReturn(true);
         when(plateRepository.findAllByRestaurantEntityId(restaurantId)).thenReturn(existingPlates);

@@ -15,8 +15,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -235,6 +240,41 @@ class RestaurantUseCaseTest {
         // Act & Assert
         Assertions.assertThrows(DniNumberRequiredException.class, () -> {
             restaurantUseCase.validateDniNumber(emptyDniNumber);
+        });
+    }
+
+    @Test
+    void testGetAllRestaurants() {
+        // Arrange
+        int page = 1;
+        int pageSize = 10;
+        Restaurant restaurant = new Restaurant(10L,"Las delicias de la 5ta","clle 19 N°19-22",
+                "573118688145",
+                "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
+                10L, "199191919");
+        List<Restaurant> restaurants = new ArrayList<>();
+        restaurants.add(restaurant);
+        // Add some test restaurants to the list
+
+        Mockito.lenient().when(restaurantPersistencePort.getAllRestaurants(page, pageSize)).thenReturn(restaurants);
+
+        // Act
+        List<Restaurant> result = restaurantUseCase.getAllRestaurants(page, pageSize);
+        result.add(restaurant);
+
+        // Assert
+        assertDoesNotThrow(() -> restaurantUseCase.getAllRestaurants(page,pageSize));
+    }
+
+    @Test
+    void testGetAllRestaurants_InvalidPage() {
+        // Arrange
+        int page = 0;
+        int pageSize = 10;
+
+        // Act and Assert
+        Assertions.assertThrows(PageNoValidException.class, () -> {
+            restaurantUseCase.getAllRestaurants(page, pageSize);
         });
     }
 }
