@@ -97,9 +97,13 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     @Override
     public List<Restaurant> getAllRestaurants(int page, int pageSize) {
-        List<Restaurant> restaurants = restaurantPersistencePort.getAllRestaurants(page, pageSize);
-        restaurants.sort(Comparator.comparing(Restaurant::getName));
-        return  Pagination.paginate(restaurants, pageSize, page);
+        if (page>0){
+            List<Restaurant> restaurants = restaurantPersistencePort.getAllRestaurants(page, pageSize);
+            restaurants.sort(Comparator.comparing(Restaurant::getName));
+            return  Pagination.paginate(restaurants, pageSize, page);
+        }
+        throw new PageNoValidException();
+
     }
 
 

@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.Collections;
 import java.util.Map;
 
-import static com.pragma.powerup.smallsquaremicroservice.configuration.Constants.HTTP_MESSAGE_NOT_READABLE_EXCEPTION;
-import static com.pragma.powerup.smallsquaremicroservice.configuration.Constants.RESPONSE_ERROR_MESSAGE_KEY;
+import static com.pragma.powerup.smallsquaremicroservice.configuration.Constants.*;
 
 @ControllerAdvice
 public class ControllerAdvisor {
@@ -129,6 +128,13 @@ public class ControllerAdvisor {
             HttpMessageNotReadableException httpMessageNotReadableException) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, HTTP_MESSAGE_NOT_READABLE_EXCEPTION));
+    }
+
+    @ExceptionHandler(PageNoValidException.class)
+    public ResponseEntity<Map<String, String>> handlePageNoValidException(
+            PageNoValidException pageNoValidException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, PAGE_NO_VALID));
     }
 
 
