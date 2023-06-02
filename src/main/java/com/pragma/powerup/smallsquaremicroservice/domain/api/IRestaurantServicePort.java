@@ -14,5 +14,4 @@ public interface IRestaurantServicePort {
     void validateIdOwner(Long idOwner);
     void validateDniNumber(String dniNumber);
     List<Restaurant> getAllRestaurants(int page, int pageSize);
-
 }

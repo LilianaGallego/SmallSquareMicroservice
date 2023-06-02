@@ -4,10 +4,14 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.enti
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.RestaurantAlreadyExistsException;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IRestaurantEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
+import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.PageNoValidException;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.RestaurantNotExistException;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -29,12 +33,19 @@ public class RestaurantMysqlAdapter implements IRestaurantPersistencePort {
 
     @Override
     public List<Restaurant> getAllRestaurants(int page, int pageSize) {
-        List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll();
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        Pageable pageable = PageRequest.of(page, pageSize,sort);
+        if (page < 1 || page >= pageable.getPageSize()) {
+            throw new PageNoValidException();
+
+        }
+        List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll(pageable).toList();
         if (restaurantEntities.isEmpty()) {
             throw new RestaurantNotExistException();
         }
         return restaurantEntityMapper.toRestaurantList(restaurantEntities);
     }
+
 
 
 }

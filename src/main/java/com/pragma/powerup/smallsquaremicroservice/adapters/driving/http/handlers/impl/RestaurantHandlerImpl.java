@@ -1,10 +1,10 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.impl;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.RestaurantRequestDto;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.RestaurantResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.RestaurantPageableResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IRestaurantHandler;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IRestaurantPageableResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IRestaurantRequestMapper;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IRestaurantResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IRestaurantServicePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,8 @@ public class RestaurantHandlerImpl implements IRestaurantHandler {
 
     private final IRestaurantServicePort restaurantServicePort;
     private final IRestaurantRequestMapper restaurantRequestMapper;
-    private final IRestaurantResponseMapper restaurantResponseMapper;
+    private final IRestaurantPageableResponseMapper restaurantPageableResponseMapper;
+
 
     @Override
     public void saveRestaurant(RestaurantRequestDto restaurantRequestDto) {
@@ -25,8 +26,8 @@ public class RestaurantHandlerImpl implements IRestaurantHandler {
     }
 
     @Override
-    public List<RestaurantResponseDto> getAllRestaurants(int page, int pageSize) {
-        return restaurantResponseMapper.toResponseList(restaurantServicePort.getAllRestaurants(page, pageSize));
+    public List<RestaurantPageableResponseDto> getAllRestaurants(int page, int pageSize) {
+        return restaurantPageableResponseMapper.toResponseList(restaurantServicePort.getAllRestaurants(page, pageSize));
     }
 
 }

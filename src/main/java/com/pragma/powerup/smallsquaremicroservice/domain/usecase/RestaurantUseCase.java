@@ -7,10 +7,8 @@ import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IRestaurantServicePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.util.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -40,6 +38,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
         restaurantPersistencePort.saveRestaurant(restaurant);
     }
+
 
     @Override
     public void validateName(String name) {
@@ -97,12 +96,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     @Override
     public List<Restaurant> getAllRestaurants(int page, int pageSize) {
-        if (page>0){
-            List<Restaurant> restaurants = restaurantPersistencePort.getAllRestaurants(page, pageSize);
-            restaurants.sort(Comparator.comparing(Restaurant::getName));
-            return  Pagination.paginate(restaurants, pageSize, page);
-        }
-        throw new PageNoValidException();
+        return restaurantPersistencePort.getAllRestaurants(page, pageSize);
 
     }
 

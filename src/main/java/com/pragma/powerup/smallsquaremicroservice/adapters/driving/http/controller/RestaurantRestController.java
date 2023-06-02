@@ -1,6 +1,6 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.controller;
 
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.RestaurantResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.RestaurantPageableResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IRestaurantHandler;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.RestaurantRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
@@ -51,7 +51,7 @@ public class RestaurantRestController {
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
             })
     @GetMapping("/restaurants/all/{page}/{size}")
-    public ResponseEntity<List<RestaurantResponseDto>> getAllRestaurants(@PathVariable int page, @PathVariable int size) {
+    public ResponseEntity<List<RestaurantPageableResponseDto>> getAllRestaurants(@PathVariable int page, @PathVariable int size) {
 
         return ResponseEntity.ok(restaurantHandler.getAllRestaurants(page, size));
     }
