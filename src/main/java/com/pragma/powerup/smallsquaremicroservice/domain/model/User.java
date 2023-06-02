@@ -13,7 +13,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class User {
 
-
     private String name;
     private String surname;
     private String mail;
