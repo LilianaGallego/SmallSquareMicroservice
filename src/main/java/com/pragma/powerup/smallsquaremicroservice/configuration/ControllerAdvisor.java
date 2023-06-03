@@ -6,7 +6,6 @@ import com.pragma.powerup.smallsquaremicroservice.configuration.security.excepti
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.Collections;
@@ -121,20 +120,6 @@ public class ControllerAdvisor {
             NotOwnerRestaurant notOwnerRestaurant) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, Constants.NOT_OWNER_RESTAURANT));
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException httpMessageNotReadableException) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, HTTP_MESSAGE_NOT_READABLE_EXCEPTION));
-    }
-
-    @ExceptionHandler(PageNoValidException.class)
-    public ResponseEntity<Map<String, String>> handlePageNoValidException(
-            PageNoValidException pageNoValidException) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, PAGE_NO_VALID));
     }
 
 

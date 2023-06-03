@@ -51,11 +51,16 @@ public class TokenInterceptor implements HandlerInterceptor {
 
         String roleUser = roles.get(0);
 
+
         if (ADMIN.equals(roleUser) && isAdmin(request.getRequestURI())) {
             return true;
         }
 
         if (OWNER.equals(roleUser) && isOwner(request.getRequestURI())) {
+            return true;
+        }
+
+        if (OWNER.equals(roleUser) && isOwnerRestaurant(request.getRequestURI())) {
             return true;
         }
 
@@ -68,7 +73,12 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     private boolean isOwner(String requestURI) {
 
-       return requestURI.startsWith("/smallsquare/plate/");
+       return requestURI.contains("/smallsquare/plate/");
+
+    }
+    private boolean isOwnerRestaurant(String requestURI) {
+
+        return requestURI.contains("/smallsquare/employee/");
 
     }
 

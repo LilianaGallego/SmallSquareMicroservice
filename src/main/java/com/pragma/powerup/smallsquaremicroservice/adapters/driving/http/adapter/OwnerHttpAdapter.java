@@ -2,7 +2,7 @@ package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.UserNotFoundException;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
-import com.pragma.powerup.smallsquaremicroservice.domain.model.User;
+import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

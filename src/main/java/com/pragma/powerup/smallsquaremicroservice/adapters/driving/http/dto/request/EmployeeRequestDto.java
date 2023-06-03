@@ -1,30 +1,23 @@
-package com.pragma.powerup.smallsquaremicroservice.domain.model;
+package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
-@Getter
-@Setter
+import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-
+@Getter
+@Setter
+public class EmployeeRequestDto {
 
     private String name;
     private String surname;
     private String mail;
     private String phone;
-    private Date birthdate;
+    private LocalDate birthdate;
     private String dniNumber;
     private String password;
     private Long idRole;
-
-
-
-
-
 }
