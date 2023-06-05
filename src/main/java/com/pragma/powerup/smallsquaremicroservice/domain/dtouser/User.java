@@ -1,11 +1,11 @@
-package com.pragma.powerup.smallsquaremicroservice.domain.model;
+package com.pragma.powerup.smallsquaremicroservice.domain.dtouser;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -13,11 +13,12 @@ import java.util.Date;
 @NoArgsConstructor
 public class User {
 
+    private Long id;
     private String name;
     private String surname;
     private String mail;
     private String phone;
-    private Date birthdate;
+    private LocalDate birthdate;
     private String dniNumber;
     private String password;
     private Long idRole;

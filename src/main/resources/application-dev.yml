@@ -1,5 +1,5 @@
 server:
-  port: 9080
+  port: 9090
 
 spring:
   datasource:
@@ -24,3 +24,5 @@ management:
 my:
   variables:
     url: "http://localhost:8080/user/owner/getOwnerById/"
+    employee: "http://localhost:8080/user/employee/createEmployee"
+    getEmployee: "http://localhost:8080/user/employee/getEmployeeByDni/"

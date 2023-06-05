@@ -127,7 +127,6 @@ public class PlateUseCase  implements IPlateServicePort {
         }
 
     }
-
     @Override
     public void validateIdOwner(Long idRestaurant) {
         Optional<RestaurantEntity> restaurantEntityOptional ;

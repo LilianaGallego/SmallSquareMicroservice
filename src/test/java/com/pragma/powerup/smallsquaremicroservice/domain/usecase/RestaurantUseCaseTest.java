@@ -1,10 +1,17 @@
 package com.pragma.powerup.smallsquaremicroservice.domain.usecase;
 
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.RestaurantEntity;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.OwnerHttpAdapter;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.EmployeeRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
+import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
+import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
+import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
-import com.pragma.powerup.smallsquaremicroservice.domain.model.User;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IEmployeePersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,11 +22,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.Date;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
 import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("ALL")
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +36,14 @@ class RestaurantUseCaseTest {
 
     @Mock
     private IRestaurantPersistencePort restaurantPersistencePort;
+
+    @Mock
+    private IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
+
+    @Mock
+    private IRestaurantRepository restaurantRepository;
+    @Mock
+    private IEmployeePersistencePort employeePersistencePort;
     @Mock
     private OwnerHttpAdapter ownerHttpAdapter;
     @InjectMocks
@@ -40,8 +57,8 @@ class RestaurantUseCaseTest {
     @Test
     void testSaveRestaurant()  {
         // Arrange
-        User user = new User("Lili", "Gallego","lili@gmail.com","288383",
-                new Date(1989, 3, 4),"12345","123456",Constants.OWNER_ROLE_ID);
+        User user = new User(1L,"Lili", "Gallego","lili@gmail.com","288383",
+                LocalDate.of(1989, 3, 4),"12345","123456",Constants.OWNER_ROLE_ID);
 
 
         Restaurant restaurant = new Restaurant(10L,"Las delicias de la 5ta","clle 19 N°19-22",
@@ -56,7 +73,7 @@ class RestaurantUseCaseTest {
         restaurantUseCase.saveRestaurant(restaurant);
 
         // Assert
-        Mockito.verify(restaurantPersistencePort, times(1)).saveRestaurant(restaurant);
+        verify(restaurantPersistencePort, times(1)).saveRestaurant(restaurant);
     }
 
     @Test
@@ -81,7 +98,7 @@ class RestaurantUseCaseTest {
         }
 
         // Verifica que no se haya llamado al método saveRestaurant
-        Mockito.verify(restaurantPersistencePort, never()).saveRestaurant(any(Restaurant.class));
+        verify(restaurantPersistencePort, never()).saveRestaurant(any(Restaurant.class));
     }
 
     @Test
@@ -237,4 +254,59 @@ class RestaurantUseCaseTest {
             restaurantUseCase.validateDniNumber(emptyDniNumber);
         });
     }
+
+
+    @Test
+    void testSaveRestaurantEmployees() {
+        // Arrange
+        Long idEmployee = 1L;
+        Long idRestaurant = 2L;
+        restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, restaurantEmployeePersistencePort,
+                employeePersistencePort,restaurantRepository);
+
+        RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee, idRestaurant);
+        // Act
+        restaurantUseCase.saveRestaurantEmployees(restaurantEmployee.getIdEmployee(), restaurantEmployee.getIdRestaurant());
+
+        // Assert
+        verify(restaurantEmployeePersistencePort, times(1)).saveRestaurantEmployee(Mockito.any(RestaurantEmployee.class));
+    }
+
+    @Test
+    void testAddEmployee() {
+        // Arrange
+        Long idEmployee = 1L;
+        Long idRestaurant = 2L;
+        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
+        employeeRequestDto.setDniNumber("12345678");
+        User user = new User();
+        user.setId(idEmployee);
+        user.setDniNumber(employeeRequestDto.getDniNumber());
+        Restaurant restaurant = new Restaurant(2L, "Name", "Address", "56165", "urlLogo.jpg",
+                2L, "1235156");
+        //RestaurantEmployeePersistencePort restaurantEmployeePersistencePort = mock(RestaurantEmployeePersistencePort.class);
+        restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, restaurantEmployeePersistencePort,
+                employeePersistencePort,restaurantRepository);
+        RestaurantEntity restaurantEntity = new RestaurantEntity();
+        restaurantEntity.setId(idRestaurant);
+        TokenInterceptor.setIdOwner(2L);
+        restaurantEntity.setIdOwner(TokenInterceptor.getIdOwner());
+
+        employeePersistencePort.createEmployee(employeeRequestDto,idRestaurant);
+        when(employeePersistencePort.getEmployee(employeeRequestDto.getDniNumber())).thenReturn(user);
+        when(restaurantRepository.findById(idRestaurant)).thenReturn(Optional.of(restaurantEntity));
+
+
+        // Act
+        restaurantUseCase.addEmployee(employeeRequestDto, idRestaurant);
+
+        // Assert
+        Assertions.assertDoesNotThrow(() -> {
+            restaurantUseCase.addEmployee(employeeRequestDto,idRestaurant);
+        });
+        verify(employeePersistencePort, times(3)).createEmployee(employeeRequestDto, idRestaurant);
+        verify(employeePersistencePort, times(2)).getEmployee("12345678");
+        verify(restaurantEmployeePersistencePort, times(2)).saveRestaurantEmployee(Mockito.any(RestaurantEmployee.class));
+    }
+
 }

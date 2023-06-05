@@ -4,7 +4,7 @@ package com.pragma.powerup.smallsquaremicroservice.configuration.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.TokenException;
-import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.UserNotRoleOwnerException;
+import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.UserNotRoleAuthorized;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;
@@ -23,6 +23,8 @@ public class TokenInterceptor implements HandlerInterceptor {
     private static Long idOwner;
     private static final String OWNER= "ROLE_OWNER";
     private static final String ADMIN= "ROLE_ADMIN";
+    private static final String CONSUMER= "ROLE_CONSUMER";
+
 
     public static String getAuthorizationToken() {
         return token;
@@ -49,6 +51,7 @@ public class TokenInterceptor implements HandlerInterceptor {
 
         String roleUser = roles.get(0);
 
+
         if (ADMIN.equals(roleUser) && isAdmin(request.getRequestURI())) {
             return true;
         }
@@ -56,17 +59,36 @@ public class TokenInterceptor implements HandlerInterceptor {
         if (OWNER.equals(roleUser) && isOwner(request.getRequestURI())) {
             return true;
         }
-        throw new UserNotRoleOwnerException();
+
+        if (OWNER.equals(roleUser) && isOwnerRestaurant(request.getRequestURI())) {
+            return true;
+        }
+
+        if (CONSUMER.equals(roleUser) && isClient(request.getRequestURI())) {
+            return true;
+        }
+
+        throw new UserNotRoleAuthorized();
     }
 
     private boolean isOwner(String requestURI) {
 
-       return requestURI.startsWith("/smallsquare/plate/");
+       return requestURI.contains("/smallsquare/plate/");
+
+    }
+    private boolean isOwnerRestaurant(String requestURI) {
+
+        return requestURI.contains("/smallsquare/employee/");
 
     }
 
     private boolean isAdmin(String requestURI) {
         return requestURI.startsWith("/smallsquare/restaurant/");
+
+    }
+
+    private boolean isClient(String requestURI) {
+        return requestURI.startsWith("/smallsquare/restaurants/all/");
 
     }
 }

@@ -1,23 +1,40 @@
 package com.pragma.powerup.smallsquaremicroservice.domain.usecase;
 
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.RestaurantEntity;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.OwnerHttpAdapter;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.EmployeeRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
+import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
+import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
+import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
-import com.pragma.powerup.smallsquaremicroservice.domain.model.User;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IEmployeePersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IRestaurantServicePort;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class RestaurantUseCase implements IRestaurantServicePort {
     private final IRestaurantPersistencePort restaurantPersistencePort;
+    private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
+    private final IEmployeePersistencePort employeePersistencePort;
+
+    private final IRestaurantRepository restaurantRepository;
+
     @Autowired
     protected OwnerHttpAdapter ownerHttpAdapter;
 
-    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistencePort) {
+    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IEmployeePersistencePort employeePersistencePort, IRestaurantRepository restaurantRepository) {
         this.restaurantPersistencePort = restaurantPersistencePort;
+        this.restaurantEmployeePersistencePort = restaurantEmployeePersistencePort;
+        this.employeePersistencePort = employeePersistencePort;
+        this.restaurantRepository = restaurantRepository;
     }
 
     @Override
@@ -89,6 +106,42 @@ public class RestaurantUseCase implements IRestaurantServicePort {
         if (!pattern.matcher(dniNumber).matches()||dniNumber.equals("")) {
             throw new DniNumberRequiredException();
         }
+
+    }
+
+    @Override
+    public void saveRestaurantEmployees(Long idEmployee, Long idRestaurant) {
+
+        RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee, idRestaurant);
+        restaurantEmployeePersistencePort.saveRestaurantEmployee(restaurantEmployee);
+    }
+
+    @Override
+    public void addEmployee(EmployeeRequestDto user, Long idRestaurant) {
+        validateOwner(idRestaurant);
+        employeePersistencePort.createEmployee(user, idRestaurant);
+        User user1 = employeePersistencePort.getEmployee(user.getDniNumber());
+        saveRestaurantEmployees(user1.getId(),idRestaurant);
+
+    }
+
+    @Override
+    public void validateOwner(Long idRestaurant) {
+        Optional<RestaurantEntity> restaurantEntityOptional ;
+        if(restaurantRepository.findById(idRestaurant).isEmpty()){
+            throw new RestaurantNotExistException();
+        }
+        restaurantEntityOptional = restaurantRepository.findById(idRestaurant);
+        Long idOwnerToken = TokenInterceptor.getIdOwner();
+        RestaurantEntity restaurantEntity = restaurantEntityOptional.get();
+        if (!restaurantEntity.getIdOwner().equals(idOwnerToken)) {
+            throw new NotOwnerRestaurant();
+        }
+    }
+
+    @Override
+    public List<Restaurant> getAllRestaurants(int page, int pageSize) {
+        return restaurantPersistencePort.getAllRestaurants(page, pageSize);
 
     }
 

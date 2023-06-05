@@ -2,17 +2,16 @@ package com.pragma.powerup.smallsquaremicroservice.configuration;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.TokenException;
+import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.UserNotRoleAuthorized;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.Collections;
 import java.util.Map;
 
-import static com.pragma.powerup.smallsquaremicroservice.configuration.Constants.HTTP_MESSAGE_NOT_READABLE_EXCEPTION;
-import static com.pragma.powerup.smallsquaremicroservice.configuration.Constants.RESPONSE_ERROR_MESSAGE_KEY;
+import static com.pragma.powerup.smallsquaremicroservice.configuration.Constants.*;
 
 @ControllerAdvice
 public class ControllerAdvisor {
@@ -48,6 +47,14 @@ public class ControllerAdvisor {
             UserNotFoundException userNotFoundException) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, Constants.USER_NOT_FOUND_MESSAGE));
+
+    }
+
+    @ExceptionHandler(UserNotRoleAuthorized.class)
+    public ResponseEntity<Map<String, String>> handleUserNotRoleAuthorized(
+            UserNotRoleAuthorized userNotRoleAuthorized) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, Constants.USER_NOT_ROLE_AUTHORIZED));
 
     }
 
@@ -113,13 +120,6 @@ public class ControllerAdvisor {
             NotOwnerRestaurant notOwnerRestaurant) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, Constants.NOT_OWNER_RESTAURANT));
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException httpMessageNotReadableException) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, HTTP_MESSAGE_NOT_READABLE_EXCEPTION));
     }
 
 
