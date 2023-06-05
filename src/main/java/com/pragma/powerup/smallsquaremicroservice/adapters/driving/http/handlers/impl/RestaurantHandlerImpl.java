@@ -1,5 +1,6 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.impl;
 
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.EmployeeRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.RestaurantRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.RestaurantPageableResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IRestaurantHandler;
@@ -28,6 +29,12 @@ public class RestaurantHandlerImpl implements IRestaurantHandler {
     @Override
     public List<RestaurantPageableResponseDto> getAllRestaurants(int page, int pageSize) {
         return restaurantPageableResponseMapper.toResponseList(restaurantServicePort.getAllRestaurants(page, pageSize));
+    }
+
+    @Override
+    public void addEmployee(Long idRestaurant, EmployeeRequestDto employeeRequestDto) {
+        restaurantServicePort.addEmployee(employeeRequestDto, idRestaurant);
+
     }
 
 }

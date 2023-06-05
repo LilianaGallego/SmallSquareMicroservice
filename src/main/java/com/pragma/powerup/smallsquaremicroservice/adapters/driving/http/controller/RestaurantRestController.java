@@ -1,5 +1,6 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.controller;
 
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.EmployeeRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.RestaurantPageableResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IRestaurantHandler;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.RestaurantRequestDto;
@@ -54,6 +55,22 @@ public class RestaurantRestController {
     public ResponseEntity<List<RestaurantPageableResponseDto>> getAllRestaurants(@PathVariable int page, @PathVariable int size) {
 
         return ResponseEntity.ok(restaurantHandler.getAllRestaurants(page, size));
+    }
+
+    @SecurityRequirement(name = "jwt")
+    @Operation(summary = "Add a new restaurant",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Restaurant created",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
+                    @ApiResponse(responseCode = "409", description = "Restaurant already exists",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+            })
+    @SecurityRequirement(name = "jwt")
+    @PostMapping("/employee/{idRestaurant}")
+    public ResponseEntity<Map<String, String>> addEmployee(@RequestBody EmployeeRequestDto user, @PathVariable Long idRestaurant) {
+        restaurantHandler.addEmployee(idRestaurant,user);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.USER_CREATED_MESSAGE));
     }
 
 }
