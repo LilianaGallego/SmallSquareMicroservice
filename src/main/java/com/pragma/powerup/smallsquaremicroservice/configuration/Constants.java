@@ -7,6 +7,8 @@ public class Constants {
     }
 
     public static final Long OWNER_ROLE_ID = 2L;
+
+    public static final Long EMPLOYEE_ROLE_ID = 4L;
     public static final String RESPONSE_MESSAGE_KEY = "message";
     public static final String RESTAURANT_CREATED_MESSAGE = "Restaurant created successfully";
     public static final String USER_CREATED_MESSAGE = "User created successfully";
