@@ -1,6 +1,7 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.controller;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.EmployeeRequestDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.RestaurantPageableResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IRestaurantHandler;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.RestaurantRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -38,6 +40,20 @@ public class RestaurantRestController {
         restaurantHandler.saveRestaurant(restaurantRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.RESTAURANT_CREATED_MESSAGE));
+    }
+
+    @SecurityRequirement(name = "jwt")
+    @Operation(summary = "Get all restaurants",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Restaurants",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
+                    @ApiResponse(responseCode = "404", description = "Restaurant not found ",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+            })
+    @GetMapping("/restaurants/all/{page}/{size}")
+    public ResponseEntity<List<RestaurantPageableResponseDto>> getAllRestaurants(@PathVariable int page, @PathVariable int size) {
+
+        return ResponseEntity.ok(restaurantHandler.getAllRestaurants(page, size));
     }
 
     @Operation(summary = "Add a new employee",
