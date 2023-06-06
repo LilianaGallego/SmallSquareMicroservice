@@ -40,17 +40,16 @@ public class RestaurantRestController {
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.RESTAURANT_CREATED_MESSAGE));
     }
 
-    @SecurityRequirement(name = "jwt")
-    @Operation(summary = "Add a new restaurant",
+    @Operation(summary = "Add a new employee",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Restaurant created",
+                    @ApiResponse(responseCode = "201", description = "Employee created",
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
-                    @ApiResponse(responseCode = "409", description = "Restaurant already exists",
+                    @ApiResponse(responseCode = "409", description = "Employee already exists",
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
             })
     @SecurityRequirement(name = "jwt")
     @PostMapping("/employee/{idRestaurant}")
-    public ResponseEntity<Map<String, String>> addEmployee( @RequestBody EmployeeRequestDto user, @PathVariable Long idRestaurant) {
+    public ResponseEntity<Map<String, String>> addEmployee(@RequestBody EmployeeRequestDto user, @PathVariable Long idRestaurant) {
         restaurantHandler.addEmployee(idRestaurant,user);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.USER_CREATED_MESSAGE));
