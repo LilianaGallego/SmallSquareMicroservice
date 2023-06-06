@@ -57,12 +57,12 @@ public class RestaurantRestController {
         return ResponseEntity.ok(restaurantHandler.getAllRestaurants(page, size));
     }
 
-    @SecurityRequirement(name = "jwt")
-    @Operation(summary = "Add a new restaurant",
+
+    @Operation(summary = "Add a new employee",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Restaurant created",
+                    @ApiResponse(responseCode = "201", description = "Employee created",
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
-                    @ApiResponse(responseCode = "409", description = "Restaurant already exists",
+                    @ApiResponse(responseCode = "409", description = "Employee already exists",
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
             })
     @SecurityRequirement(name = "jwt")
