@@ -127,6 +127,13 @@ public class PlateUseCase  implements IPlateServicePort {
         }
 
     }
+
+    @Override
+    public List<Plate> getAllPlatesByRestaurant(Long idRestaurant, Long idCategory, int page, int size) {
+        return platePersistencePort.getAllPlatesByRestaurant(idRestaurant, idCategory, page, size);
+    }
+
+
     @Override
     public void validateIdOwner(Long idRestaurant) {
         Optional<RestaurantEntity> restaurantEntityOptional ;

@@ -68,6 +68,10 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        if (CONSUMER.equals(roleUser) && isClientListPlates(request.getRequestURI())) {
+            return true;
+        }
+
         throw new UserNotRoleAuthorized();
     }
 
@@ -91,5 +95,11 @@ public class TokenInterceptor implements HandlerInterceptor {
         return requestURI.startsWith("/smallsquare/restaurants/all/");
 
     }
+
+    private boolean isClientListPlates(String requestURI) {
+        return requestURI.startsWith("/smallsquare/plates/byRestaurant");
+
+    }
+
 }
 

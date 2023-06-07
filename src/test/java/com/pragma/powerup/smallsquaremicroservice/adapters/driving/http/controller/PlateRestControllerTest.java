@@ -2,6 +2,8 @@ package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.control
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.PlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.UpdatePlateRequestDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.PlateResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.RestaurantPageableResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IPlateHandler;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +17,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class PlateRestControllerTest {
@@ -64,6 +71,30 @@ class PlateRestControllerTest {
         // Assert
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(Constants.PLATE_UPDATED_MESSAGE, responseEntity.getBody().get(Constants.RESPONSE_MESSAGE_KEY));
+    }
+
+    @Test
+    void testGetAllPlates() {
+        // Arrange
+        int page = 1;
+        int size = 10;
+        Long idRestaurqant =1L;
+        Long idCategory=1L;
+        List<PlateResponseDto> plateResponseDtos = Arrays.asList(
+                new PlateResponseDto("Las Delicias", 10000,"Bandeja con frijol,arroz, maduro, chicharron","url",1L,1L),
+                new PlateResponseDto("Las 3 B", 7000,"Bandeja con frijol,arroz, maduro, chicharron","url",1L,1L));
+
+
+        Mockito.when(plateHandler.getAllPlatesByRestaurant(idRestaurqant,idCategory,page, size)).thenReturn(plateResponseDtos);
+
+        // Act
+        ResponseEntity<List<PlateResponseDto>> response = restController.getAllPlatesByRestaurant(idRestaurqant,idCategory,page, size);
+
+        // Assert
+        verify(plateHandler, times(1)).getAllPlatesByRestaurant(idRestaurqant,idCategory,page, size);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(plateResponseDtos, response.getBody());
     }
 
 }

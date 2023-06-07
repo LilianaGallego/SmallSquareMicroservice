@@ -2,6 +2,7 @@ package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.control
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.PlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.UpdatePlateRequestDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.PlateResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IPlateHandler;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -64,5 +66,19 @@ public class PlateRestController {
         plateHandler.updateStatusPlate(idPlate);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.PLATE_UPDATED_MESSAGE));
+    }
+
+    @SecurityRequirement(name = "jwt")
+    @Operation(summary = "Get all plates by restaurant",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Plates by restaurant",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
+                    @ApiResponse(responseCode = "404", description = "Plate not found ",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+            })
+    @GetMapping("/plates/byRestaurant")
+    public ResponseEntity<List<PlateResponseDto>> getAllPlatesByRestaurant(@RequestParam Long idRestaurant, @RequestParam Long idCategory, @RequestParam int page, @RequestParam int size) {
+
+        return ResponseEntity.ok(plateHandler.getAllPlatesByRestaurant(idRestaurant,idCategory,page, size));
     }
 }

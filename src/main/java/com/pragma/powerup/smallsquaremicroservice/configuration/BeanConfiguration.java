@@ -11,6 +11,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repo
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IPlateRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantEmployeeRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.EmployeeHttpAdapter;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.OwnerHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.ICategoryServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IPlateServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IRestaurantServicePort;
@@ -42,7 +43,7 @@ public class BeanConfiguration {
 
     @Bean
     public IRestaurantServicePort restaurantServicePort() {
-        return new RestaurantUseCase(restaurantPersistencePort(), restaurantEmployeePersistencePort(), employeePersistencePort(), restaurantRepository);
+        return new RestaurantUseCase(restaurantPersistencePort(), restaurantEmployeePersistencePort(), employeePersistencePort(), restaurantRepository, ownerPersistencePort());
     }
     @Bean
     public IRestaurantPersistencePort restaurantPersistencePort() {
@@ -53,7 +54,8 @@ public class BeanConfiguration {
     public IEmployeePersistencePort employeePersistencePort() {
         return new EmployeeHttpAdapter();
     }
-
+    @Bean
+    public IOwnerHttpPersistencePort ownerPersistencePort() {return new OwnerHttpAdapter();}
 
     @Bean
     public IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort() {
