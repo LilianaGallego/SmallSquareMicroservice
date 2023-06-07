@@ -6,7 +6,8 @@
     This repository contains the small square microservice that the restaurant creates, the dishes according to the category and the orders. In the database, the category is entered into the category table manually.
   </p >
    <p align="justify">
-      The implementation of this microservice begins with the creation of the restaurant that a user with owner role must have and the creation of a dish that belongs to a restaurant and that has an assigned category.
+      The implementation of this microservice begins with the creation of the restaurant that a user with the role of 
+owner must have and the creation of a dish that belongs to a restaurant and that has an assigned category, update of the dish, security of the routes is added, The employee is created, the dish is enabled or disabled, all the restaurants are listed with pagination and the dishes are listed by category id and restaurant id
 
    </p>
 
@@ -60,10 +61,15 @@ To get a local copy up and running follow these steps:
    [http://localhost:9080/swagger-ui/index.html#](http://localhost:9080/swagger-ui/index.html) in your web browser
    ![img.png](img/img3.png)
 - Create plate
-![img.png](img/img7.png)
+   ![img.png](img/img7.png)
 - Update plate
-![img.png](img/img8.png)
-
+   ![img.png](img/img8.png)
+- Update state
+   ![img.png](img/img9.png)
+- List all restaurantes 
+   ![img.png](img/img10.png)
+- List plates by restaurantId and categoryId
+   ![img_1.png](img/img11.png)
 
 <!-- ROADMAP -->
 ## Tests
