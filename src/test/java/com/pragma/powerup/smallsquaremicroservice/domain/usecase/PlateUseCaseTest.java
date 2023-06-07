@@ -13,14 +13,17 @@ import com.pragma.powerup.smallsquaremicroservice.domain.model.Category;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Plate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IPlatePersistencePort;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -339,6 +342,7 @@ class PlateUseCaseTest {
     void testUpdateStatusPlate() {
         // Arrange
         Long idRestaurant = 10L;
+
         Restaurant restaurant = new Restaurant(10L,"Las delicias de la 5ta","clle 19 N°19-22",
                 "18181818",
                 "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
@@ -362,5 +366,33 @@ class PlateUseCaseTest {
 
         // Additional assertions
         plateUseCase.updateStatusPlate(plate.getId());
+    }
+
+    @Test
+    void testGetAllRestaurants() {
+        // Arrange
+        int page = 1;
+        int size = 10;
+        Restaurant restaurant = new Restaurant(10L,"Las delicias de la 5ta","clle 19 N°19-22",
+                "18181818",
+                "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
+                10L, "199191919");
+        Category category = new Category(1L,"Entrada","Papitas chips");
+
+        List<Plate> plates = new LinkedList<>();
+        plates.add(new Plate(10L,"papitas chip",1000,"crocantes papitas chip 100gr",
+                "urlimage",category,true, restaurant));
+
+        // Act
+        Mockito.when(platePersistencePort.getAllPlatesByRestaurant(10L, 1L,1, 10)).thenReturn(plates);
+
+
+        List<Plate> result = plateUseCase.getAllPlatesByRestaurant(10L, 1L,page, size);
+
+        // Assert
+        verify(platePersistencePort).getAllPlatesByRestaurant(10L, 1L,1, 10);
+        Assertions.assertDoesNotThrow(() -> {
+            plateUseCase.getAllPlatesByRestaurant(10L, 1L,page, size);});
+
     }
 }
