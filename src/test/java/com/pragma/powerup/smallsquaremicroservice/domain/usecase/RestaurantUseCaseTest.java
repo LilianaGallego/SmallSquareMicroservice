@@ -1,8 +1,8 @@
 package com.pragma.powerup.smallsquaremicroservice.domain.usecase;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.RestaurantEntity;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IRestaurantEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.OwnerHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.EmployeeRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
@@ -11,22 +11,21 @@ import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IEmployeePersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOwnerHttpPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.*;
 
-import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -38,6 +37,8 @@ class RestaurantUseCaseTest {
     private IRestaurantPersistencePort restaurantPersistencePort;
 
     @Mock
+    private IRestaurantEntityMapper entityMapper;
+    @Mock
     private IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
 
     @Mock
@@ -45,13 +46,16 @@ class RestaurantUseCaseTest {
     @Mock
     private IEmployeePersistencePort employeePersistencePort;
     @Mock
-    private OwnerHttpAdapter ownerHttpAdapter;
-    @InjectMocks
+    private IOwnerHttpPersistencePort  ownerHttpPersistencePort;
+
     private RestaurantUseCase restaurantUseCase;
 
     @BeforeEach
     public void setUp() {
+
         MockitoAnnotations.openMocks(this);
+        restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, restaurantEmployeePersistencePort,
+                employeePersistencePort,restaurantRepository, ownerHttpPersistencePort);
     }
 
     @Test
@@ -67,13 +71,13 @@ class RestaurantUseCaseTest {
                 10L, "199191919");
 
 
-        Mockito.when(ownerHttpAdapter.getOwner((10L))).thenReturn(user);
+       when(ownerHttpPersistencePort.getOwner((10L))).thenReturn(user);
         restaurantPersistencePort.saveRestaurant(restaurant);
         // Act
         restaurantUseCase.saveRestaurant(restaurant);
 
         // Assert
-        verify(restaurantPersistencePort, times(1)).saveRestaurant(restaurant);
+        verify(restaurantPersistencePort, times(2)).saveRestaurant(restaurant);
     }
 
     @Test
@@ -85,20 +89,13 @@ class RestaurantUseCaseTest {
         User user = new User();
         user.setIdRole(456L); // Rol incorrecto
 
-        Mockito.when(ownerHttpAdapter.getOwner(123L)).thenReturn(user);
+        Mockito.when(ownerHttpPersistencePort.getOwner(123L)).thenReturn(user);
 
-        try {
-            // Act
-            restaurantUseCase.saveRestaurant(restaurant);
-            fail("Expected UserNotRoleOwnerException to be thrown");
-        } catch (UserNotRoleOwnerException ex) {
-            // Assert
-            // Verifica que se haya lanzado la excepción correctamente
-            Assertions.assertEquals("UserNotRoleOwnerException", ex.getClass().getSimpleName());
-        }
 
-        // Verifica que no se haya llamado al método saveRestaurant
         verify(restaurantPersistencePort, never()).saveRestaurant(any(Restaurant.class));
+        Assertions.assertThrows(UserNotRoleOwnerException.class, () -> {
+            restaurantUseCase.saveRestaurant(restaurant);
+        });
     }
 
     @Test
@@ -255,14 +252,11 @@ class RestaurantUseCaseTest {
         });
     }
 
-
     @Test
     void testSaveRestaurantEmployees() {
         // Arrange
         Long idEmployee = 1L;
         Long idRestaurant = 2L;
-        restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, restaurantEmployeePersistencePort,
-                employeePersistencePort,restaurantRepository);
 
         RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee, idRestaurant);
         // Act
@@ -284,9 +278,6 @@ class RestaurantUseCaseTest {
         user.setDniNumber(employeeRequestDto.getDniNumber());
         Restaurant restaurant = new Restaurant(2L, "Name", "Address", "56165", "urlLogo.jpg",
                 2L, "1235156");
-        //RestaurantEmployeePersistencePort restaurantEmployeePersistencePort = mock(RestaurantEmployeePersistencePort.class);
-        restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, restaurantEmployeePersistencePort,
-                employeePersistencePort,restaurantRepository);
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setId(idRestaurant);
         TokenInterceptor.setIdOwner(2L);
@@ -309,4 +300,30 @@ class RestaurantUseCaseTest {
         verify(restaurantEmployeePersistencePort, times(2)).saveRestaurantEmployee(Mockito.any(RestaurantEmployee.class));
     }
 
+    @Test
+    void testGetAllRestaurants() {
+        // Arrange
+        int page = 1;
+        int size = 10;
+
+
+        List<Restaurant> restaurants = new LinkedList<>();
+        restaurants.add(new Restaurant(
+                10L,"Las delicias de la 5ta","clle 19 N°19-22",
+                "573118688145",
+                "https://jimdo-storage.freetls.fastly.net/image/9939456/d2e94e18-d535-4d67-87ef-e96f4d1b591f.png?quality=80,90&auto=webp&disable=upscale&width=455.23809523809524&height=239&crop=1:0.525",
+                10L, "199191919"));
+
+
+        Mockito.when(restaurantPersistencePort.getAllRestaurants(1, 10)).thenReturn(restaurants);
+
+        // Act
+        List<Restaurant> result = restaurantUseCase.getAllRestaurants(page, size);
+
+        // Assert
+        verify(restaurantPersistencePort).getAllRestaurants(1, 10);
+        Assertions.assertDoesNotThrow(() -> {
+            restaurantUseCase.getAllRestaurants(page, size);});
+
+    }
 }

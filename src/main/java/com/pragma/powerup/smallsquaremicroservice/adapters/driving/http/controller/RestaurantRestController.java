@@ -42,7 +42,6 @@ public class RestaurantRestController {
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.RESTAURANT_CREATED_MESSAGE));
     }
 
-
     @SecurityRequirement(name = "jwt")
     @Operation(summary = "Get all restaurants",
             responses = {
@@ -56,7 +55,6 @@ public class RestaurantRestController {
 
         return ResponseEntity.ok(restaurantHandler.getAllRestaurants(page, size));
     }
-
 
     @Operation(summary = "Add a new employee",
             responses = {
@@ -74,3 +72,4 @@ public class RestaurantRestController {
     }
 
 }
+

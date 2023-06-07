@@ -3,6 +3,7 @@ package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.UserNotFoundException;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOwnerHttpPersistencePort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,12 +14,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class OwnerHttpAdapter {
+public class OwnerHttpAdapter implements IOwnerHttpPersistencePort {
     RestTemplate restTemplate = new RestTemplate();
     @Value("${my.variables.url}")
     String url;
 
-
+    @Override
     public User getOwner(Long id) {
         String urlId = url + id;
         String token = TokenInterceptor.getAuthorizationToken();

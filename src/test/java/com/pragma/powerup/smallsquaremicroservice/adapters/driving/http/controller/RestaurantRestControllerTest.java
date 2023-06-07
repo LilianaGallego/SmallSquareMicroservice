@@ -2,6 +2,7 @@ package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.control
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.EmployeeRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.RestaurantRequestDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.RestaurantPageableResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IRestaurantHandler;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -73,4 +76,34 @@ class RestaurantRestControllerTest {
         assertEquals(Constants.USER_CREATED_MESSAGE, response.getBody().get(Constants.RESPONSE_MESSAGE_KEY));
 
     }
+
+    @Test
+    void testGetAllRestaurants() {
+        // Arrange
+        int page = 1;
+        int size = 10;
+        List<RestaurantPageableResponseDto> restaurants = Arrays.asList(
+                new RestaurantPageableResponseDto("Las Delicias", "Restaurant 1"),
+                new RestaurantPageableResponseDto("Las 3 B", "Restaurant 2")
+        );
+
+
+        Mockito.when(restaurantHandler.getAllRestaurants(page, size)).thenReturn(restaurants);
+
+        // Act
+        ResponseEntity<List<RestaurantPageableResponseDto>> response = restController.getAllRestaurants(page, size);
+
+        // Assert
+        verify(restaurantHandler, times(1)).getAllRestaurants(page, size);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(restaurants, response.getBody());
+    }
+
+
+
+
+
+
+
 }

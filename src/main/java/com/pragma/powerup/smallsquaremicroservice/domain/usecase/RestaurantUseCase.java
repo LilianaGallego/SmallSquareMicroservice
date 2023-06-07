@@ -2,7 +2,6 @@ package com.pragma.powerup.smallsquaremicroservice.domain.usecase;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.RestaurantEntity;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.OwnerHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.EmployeeRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
@@ -11,10 +10,10 @@ import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IEmployeePersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOwnerHttpPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IRestaurantServicePort;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,21 +26,21 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     private final IRestaurantRepository restaurantRepository;
 
-    @Autowired
-    protected OwnerHttpAdapter ownerHttpAdapter;
+    private final IOwnerHttpPersistencePort ownerHttpPersistencePort;
 
-    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IEmployeePersistencePort employeePersistencePort, IRestaurantRepository restaurantRepository) {
+    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IEmployeePersistencePort employeePersistencePort, IRestaurantRepository restaurantRepository, IOwnerHttpPersistencePort ownerHttpPersistencePort) {
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.restaurantEmployeePersistencePort = restaurantEmployeePersistencePort;
         this.employeePersistencePort = employeePersistencePort;
         this.restaurantRepository = restaurantRepository;
+        this.ownerHttpPersistencePort = ownerHttpPersistencePort;
     }
 
     @Override
     public void saveRestaurant(Restaurant restaurant) {
         Long id = restaurant.getIdOwner();
 
-        User user = ownerHttpAdapter.getOwner(id);
+        User user = ownerHttpPersistencePort.getOwner(id);
         if (!user.getIdRole().equals(Constants.OWNER_ROLE_ID) ){
             throw new UserNotRoleOwnerException();
         }

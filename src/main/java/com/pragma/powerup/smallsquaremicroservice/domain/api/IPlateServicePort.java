@@ -3,6 +3,8 @@ package com.pragma.powerup.smallsquaremicroservice.domain.api;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.UpdatePlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Plate;
 
+import java.util.List;
+
 public interface IPlateServicePort {
 
     void savePlate(Plate plate);
@@ -15,4 +17,5 @@ public interface IPlateServicePort {
     void validateUrlImage(String urlLogo);
     void updatePlate(Long idPlate, UpdatePlateRequestDto updatePlateRequestDto);
     void updateStatusPlate(Long idPlate);
+    List<Plate> getAllPlatesByRestaurant(Long idRestaurant, Long idCategory, int page, int size);
 }
