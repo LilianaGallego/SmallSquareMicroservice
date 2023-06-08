@@ -20,7 +20,7 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     private static String token;
     @Setter
-    private static Long idOwner;
+    private static Long idUser;
     private static final String OWNER= "ROLE_OWNER";
     private static final String ADMIN= "ROLE_ADMIN";
     private static final String CONSUMER= "ROLE_CONSUMER";
@@ -29,8 +29,8 @@ public class TokenInterceptor implements HandlerInterceptor {
     public static String getAuthorizationToken() {
         return token;
     }
-    public static Long getIdOwner() {
-        return idOwner;
+    public static Long getIdUser() {
+        return idUser;
     }
 
 
@@ -47,7 +47,7 @@ public class TokenInterceptor implements HandlerInterceptor {
 
         DecodedJWT decodedJWT = JWT.decode(jwtToken);
         roles = decodedJWT.getClaim("roles").asList(String.class);
-        idOwner = decodedJWT.getClaim("id").asLong();
+        idUser = decodedJWT.getClaim("id").asLong();
 
         String roleUser = roles.get(0);
 
@@ -69,6 +69,10 @@ public class TokenInterceptor implements HandlerInterceptor {
         }
 
         if (CONSUMER.equals(roleUser) && isClientListPlates(request.getRequestURI())) {
+            return true;
+        }
+
+        if (CONSUMER.equals(roleUser) && isClientOrder(request.getRequestURI())) {
             return true;
         }
 
@@ -98,6 +102,11 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     private boolean isClientListPlates(String requestURI) {
         return requestURI.startsWith("/smallsquare/plates/byRestaurant");
+
+    }
+
+    private boolean isClientOrder(String requestURI) {
+        return requestURI.startsWith("/smallsquare/order");
 
     }
 

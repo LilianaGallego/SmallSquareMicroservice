@@ -280,8 +280,8 @@ class RestaurantUseCaseTest {
                 2L, "1235156");
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setId(idRestaurant);
-        TokenInterceptor.setIdOwner(2L);
-        restaurantEntity.setIdOwner(TokenInterceptor.getIdOwner());
+        TokenInterceptor.setIdUser(2L);
+        restaurantEntity.setIdOwner(TokenInterceptor.getIdUser());
 
         employeePersistencePort.createEmployee(employeeRequestDto,idRestaurant);
         when(employeePersistencePort.getEmployee(employeeRequestDto.getDniNumber())).thenReturn(user);

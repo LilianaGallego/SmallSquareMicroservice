@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Transactional
@@ -46,6 +47,16 @@ public class RestaurantMysqlAdapter implements IRestaurantPersistencePort {
         return restaurantEntityMapper.toRestaurantList(restaurantEntities);
     }
 
+    @Override
+    public Restaurant findById(Long idRestaurant) {
+        Optional<RestaurantEntity> restaurantEntity = restaurantRepository.findById(idRestaurant);
+        if(restaurantEntity.isPresent()) {
+            RestaurantEntity entity = restaurantEntity.get();
+            return restaurantEntityMapper.toRestaurant(entity);
+        }
+        throw new RestaurantNotExistException();
+
+    }
 
 
 }

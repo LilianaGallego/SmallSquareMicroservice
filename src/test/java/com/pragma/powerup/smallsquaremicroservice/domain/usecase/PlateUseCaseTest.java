@@ -59,8 +59,8 @@ class PlateUseCaseTest {
 
         RestaurantEntity restaurantEntity = new RestaurantEntity(1L, "Name", "Address", "56165",
                 "urlLogo.jpg", 2L, "1235156");
-        TokenInterceptor.setIdOwner(2L);
-        restaurantEntity.setIdOwner(TokenInterceptor.getIdOwner());
+        TokenInterceptor.setIdUser(2L);
+        restaurantEntity.setIdOwner(TokenInterceptor.getIdUser());
         when(restaurantRepository.existsById(plate.getRestaurant().getId())).thenReturn(true);
         when(restaurantRepository.findById(plate.getRestaurant().getId())).thenReturn(Optional.of(restaurantEntity));
         when(categoryRepository.existsById(plate.getCategory().getId())).thenReturn(true);
@@ -79,7 +79,7 @@ class PlateUseCaseTest {
                 true, new Restaurant(1L, "Name", "Address", "56165", "urlLogo.jpg",
                 2L, "1235156"));
 
-        TokenInterceptor.setIdOwner(2L);
+        TokenInterceptor.setIdUser(2L);
 
         // Act & Assert
         assertThrows(RestaurantNotExistException.class, () -> plateUseCase.savePlate(plate));
@@ -92,7 +92,7 @@ class PlateUseCaseTest {
                 true, new Restaurant(1L, "Name", "Address", "56165", "urlLogo.jpg",
                 2L, "1235156"));
 
-        TokenInterceptor.setIdOwner(2L);
+        TokenInterceptor.setIdUser(2L);
         RestaurantEntity restaurantEntity = new RestaurantEntity(1L, "Name", "Address", "56165",
                 "urlLogo.jpg", 2L, "1235156");
 
@@ -279,7 +279,7 @@ class PlateUseCaseTest {
         plateEntity.setCategoryEntity(categoryEntity);
         plateEntity.setRestaurantEntity(restaurantEntity);
 
-        TokenInterceptor.setIdOwner(2L);
+        TokenInterceptor.setIdUser(2L);
 
         //Act
         when(restaurantRepository.findById(restaurantEntity.getId())).thenReturn(Optional.of(restaurantEntity));
@@ -309,7 +309,7 @@ class PlateUseCaseTest {
         Long idRestaurant = 1L;
         Long idOwnerToken = 123456789L;
 
-        TokenInterceptor.setIdOwner(idOwnerToken);
+        TokenInterceptor.setIdUser(idOwnerToken);
 
 
         RestaurantEntity restaurantEntity = new RestaurantEntity();
@@ -327,7 +327,7 @@ class PlateUseCaseTest {
         Long idRestaurant = 1L;
         Long idOwnerToken = 123456789L;
 
-        TokenInterceptor.setIdOwner(idOwnerToken);
+        TokenInterceptor.setIdUser(idOwnerToken);
 
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setIdOwner(119129L);
@@ -354,7 +354,7 @@ class PlateUseCaseTest {
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setIdOwner(10L);
         restaurantEntity.setId(idRestaurant);
-        TokenInterceptor.setIdOwner(10L);
+        TokenInterceptor.setIdUser(10L);
         PlateEntity plateEntity = new PlateEntity();
         plateEntity.setRestaurantEntity(restaurantEntity);
         plateEntity.setId(plate.getId());

@@ -131,7 +131,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
             throw new RestaurantNotExistException();
         }
         restaurantEntityOptional = restaurantRepository.findById(idRestaurant);
-        Long idOwnerToken = TokenInterceptor.getIdOwner();
+        Long idOwnerToken = TokenInterceptor.getIdUser();
         RestaurantEntity restaurantEntity = restaurantEntityOptional.get();
         if (!restaurantEntity.getIdOwner().equals(idOwnerToken)) {
             throw new NotOwnerRestaurant();

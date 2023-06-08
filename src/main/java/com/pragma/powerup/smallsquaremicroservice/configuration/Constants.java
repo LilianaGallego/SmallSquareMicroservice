@@ -14,6 +14,7 @@ public class Constants {
     public static final String USER_CREATED_MESSAGE = "User created successfully";
 
     public static final String PLATE_CREATED_MESSAGE = "Plate created successfully";
+    public static final String ORDER_CREATED_MESSAGE = "Order created successfully";
     public static final String PLATE_UPDATED_MESSAGE = "Plate updated successfully";
     public static final String RESPONSE_ERROR_MESSAGE_KEY = "error";
     public static final String RESPONSE_ERROR_MESSAGE_TOKEN= "A problem with the token has occurred";
@@ -31,6 +32,7 @@ public class Constants {
     public static final String RESTAURANT_ALREADY_EXISTS_MESSAGE = "A Restaurant already exists with the role provided";
     public static final String RESTAURANT_NOT_EXIST_MESSAGE = "The Restaurant does not exist ";
     public static final String PLATE_ALREADY_EXISTS_MESSAGE = "A Plate already exists with the name provided";
+    public static final String ODER_ALREADY_EXISTS_MESSAGE = "A order already exists with the id restaurant provided";
     public static final String CATEGORY_ALREADY_EXISTS_MESSAGE = "A Category already exists with the name provided";
     public static final String CATEGORY_NOT_EXIST_MESSAGE = "The Category not exists";
     public static final String PLATE_NOT_EXIST_MESSAGE = "The Plate not exists";
