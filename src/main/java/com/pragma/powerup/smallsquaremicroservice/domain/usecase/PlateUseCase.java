@@ -141,9 +141,9 @@ public class PlateUseCase  implements IPlateServicePort {
             throw new RestaurantNotExistException();
         }
         restaurantEntityOptional = restaurantRepository.findById(idRestaurant);
-        Long idOwnerToken = TokenInterceptor.getIdOwner();
+        Long iduserToken = TokenInterceptor.getIdUser();
         RestaurantEntity restaurantEntity = restaurantEntityOptional.get();
-        if (!restaurantEntity.getIdOwner().equals(idOwnerToken)) {
+        if (!restaurantEntity.getIdOwner().equals(iduserToken)) {
             throw new NotOwnerRestaurant();
         }
     }
