@@ -7,6 +7,7 @@ import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +40,10 @@ class OrderUseCaseTest {
         Order order = new Order();
         Restaurant restaurant = new Restaurant();
         restaurant.setId(idRestaurant);
+        order.setIdClient(idClient);
+        order.setDate(LocalDate.now());
+        order.setState(StateEnum.EARNING);
+        order.setRestaurant(restaurant);
 
         when(restaurantPersistencePort.findById(idRestaurant)).thenReturn(restaurant);
         doNothing().when(orderPersistencePort).saveOrder(order);
@@ -50,7 +55,7 @@ class OrderUseCaseTest {
         verify(restaurantPersistencePort, times(1)).findById(idRestaurant);
         assertEquals(idClient, order.getIdClient());
         assertEquals(LocalDate.now(), order.getDate());
-        assertEquals("Pendiente", order.getState());
+        assertEquals(StateEnum.EARNING, order.getState());
         assertEquals(restaurant, order.getRestaurant());
         verify(orderPersistencePort, times(1)).saveOrder(order);
     }
