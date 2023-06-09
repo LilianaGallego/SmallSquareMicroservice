@@ -1,7 +1,7 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.adapter;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.OrderEntity;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.OrderAlreadyExistsException;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.OrderInProcessesException;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IOrderEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IOrderPlateEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IOrderPlateRepository;
@@ -10,8 +10,10 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repo
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @RequiredArgsConstructor
 @Transactional
@@ -29,10 +31,13 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
 
     @Override
     public void saveOrder(Order order) {
-        if(orderRepository.findByIdClient(order.getIdClient()).isPresent()){
-            throw new OrderAlreadyExistsException();
+        OrderEntity orderBD = orderRepository.findByIdClient(order.getIdClient());
+        if(orderBD != null  && (orderBD.getState().equals(StateEnum.READY) || orderBD.getState().equals(StateEnum.PREPARATION) || orderBD.getState().equals(StateEnum.EARNING))){
+
+            throw new OrderInProcessesException();
         }
 
+        order.setState(StateEnum.EARNING);
         orderEntity = orderRepository.save(orderEntityMapper.toEntity(order));
     }
 

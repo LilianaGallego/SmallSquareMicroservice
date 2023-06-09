@@ -123,4 +123,10 @@ public class ControllerAdvisor {
     }
 
 
+    @ExceptionHandler(OrderInProcessesException.class)
+    public ResponseEntity<Map<String, String>> handleOrderInProcessesException(
+            OrderInProcessesException orderInProcessesException) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, ORDER_IN_PROCESSES));
+    }
 }

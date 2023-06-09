@@ -36,7 +36,7 @@ public class RestaurantMysqlAdapter implements IRestaurantPersistencePort {
     public List<Restaurant> getAllRestaurants(int page, int pageSize) {
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         Pageable pageable = PageRequest.of(page, pageSize,sort);
-        if (page < 1 || page >= pageable.getPageSize()) {
+        if (page < 0 || page >= pageable.getPageSize()) {
             throw new PageNoValidException();
 
         }

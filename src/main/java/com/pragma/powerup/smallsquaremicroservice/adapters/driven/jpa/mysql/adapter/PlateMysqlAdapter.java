@@ -10,6 +10,7 @@ import com.pragma.powerup.smallsquaremicroservice.domain.spi.IPlatePersistencePo
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,13 +30,13 @@ public class PlateMysqlAdapter implements IPlatePersistencePort {
     @Override
     public List<Plate> getAllPlatesByRestaurant(Long idRestaurant, Long idCategory, int page, int size) {
 
-        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by("name").ascending());
-
-        if (page < 1 || page >= pageRequest.getPageSize()) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        Pageable pageable = PageRequest.of(page, size,sort);
+        if (page < 0 || page >= pageable.getPageSize()) {
             throw new PageNoValidException();
 
         }
-        Page<PlateEntity> plateEntities = plateRepository.findAllByRestaurantEntityIdAndCategoryEntityId(idRestaurant,idCategory,pageRequest);
+        Page<PlateEntity> plateEntities = plateRepository.findAllByRestaurantEntityIdAndCategoryEntityId(idRestaurant,idCategory,pageable);
         if (plateEntities.isEmpty()) {
             throw new RestaurantNotExistException();
         }

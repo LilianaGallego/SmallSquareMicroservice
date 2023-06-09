@@ -28,7 +28,6 @@ public class OrderUseCase implements IOrderServicePort {
         Restaurant restaurant = restaurantPersistencePort.findById(idRestaurant);
         order.setIdClient(TokenInterceptor.getIdUser());
         order.setDate(LocalDate.now());
-        order.setState("Pendiente");
         order.setRestaurant(restaurant);
         orderPersistencePort.saveOrder(order);
 
