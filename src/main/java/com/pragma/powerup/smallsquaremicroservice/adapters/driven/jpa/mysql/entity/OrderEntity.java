@@ -1,5 +1,6 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity;
 
+import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class OrderEntity {
     private Long id;
     private Long idClient;
     private LocalDate date;
-    private String state;
+    private StateEnum state;
     private Long idChef;
     @ManyToOne
     @JoinColumn(name = "id_restaurant")

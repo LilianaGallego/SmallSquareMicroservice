@@ -34,6 +34,7 @@ public class Constants {
     public static final String PLATE_ALREADY_EXISTS_MESSAGE = "A Plate already exists with the name provided";
     public static final String ODER_ALREADY_EXISTS_MESSAGE = "A order already exists with the id restaurant provided";
     public static final String CATEGORY_ALREADY_EXISTS_MESSAGE = "A Category already exists with the name provided";
+    public static final String ORDER_IN_PROCESSES = "You have an order in process, you cannot create more";
     public static final String CATEGORY_NOT_EXIST_MESSAGE = "The Category not exists";
     public static final String PLATE_NOT_EXIST_MESSAGE = "The Plate not exists";
     public static final String RESTAURANT_NOT_FOUND_MESSAGE = "No Restaurant found with the role provided";
