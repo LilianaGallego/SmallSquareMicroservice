@@ -1,12 +1,10 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.adapter;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.OrderEntity;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.OrderInProcessesException;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IOrderEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IOrderPlateEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IOrderPlateRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IOrderRepository;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
@@ -23,7 +21,6 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
 
     private final IOrderRepository orderRepository;
     private final IOrderPlateRepository orderPlateRepository;
-    private final IRestaurantRepository restaurantRepository;
     private static OrderEntity orderEntity;
     public static OrderEntity getOrderEntity() {
         return orderEntity;
@@ -31,11 +28,6 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
 
     @Override
     public void saveOrder(Order order) {
-        OrderEntity orderBD = orderRepository.findByIdClient(order.getIdClient());
-        if(orderBD != null  && (orderBD.getState().equals(StateEnum.READY) || orderBD.getState().equals(StateEnum.PREPARATION) || orderBD.getState().equals(StateEnum.EARNING))){
-
-            throw new OrderInProcessesException();
-        }
 
         order.setState(StateEnum.EARNING);
         orderEntity = orderRepository.save(orderEntityMapper.toEntity(order));
@@ -46,5 +38,15 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
         orderPlate.setOrder(orderEntityMapper.toOrder(orderEntity));
         orderPlateRepository.save(orderPlateEntityMapper.toEntity(orderPlate));
 
+    }
+
+    @Override
+    public boolean existsByIdClient(Long idClient) {
+        return orderRepository.existsByIdClient(idClient);
+    }
+
+    @Override
+    public OrderEntity findByIdClient(Long idClient) {
+        return orderRepository.findByIdClient(idClient);
     }
 }
