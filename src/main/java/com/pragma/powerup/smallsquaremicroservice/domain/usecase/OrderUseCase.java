@@ -7,8 +7,10 @@ import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class OrderUseCase implements IOrderServicePort {
 
@@ -37,6 +39,11 @@ public class OrderUseCase implements IOrderServicePort {
     public void saveOrderPlate(OrderPlate orderPlate) {
 
         orderPersistencePort.saveOrderPlate(orderPlate);
+    }
+
+    @Override
+    public List<Order> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
+        return orderPersistencePort.getAllOrdersByStateEnum(stateEnum, page, size);
     }
 
 

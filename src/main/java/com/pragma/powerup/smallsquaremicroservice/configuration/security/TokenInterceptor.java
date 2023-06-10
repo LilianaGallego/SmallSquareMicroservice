@@ -24,6 +24,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     private static final String OWNER= "ROLE_OWNER";
     private static final String ADMIN= "ROLE_ADMIN";
     private static final String CONSUMER= "ROLE_CONSUMER";
+    private static final String EMPLOYEE= "ROLE_EMPLOYEE";
 
 
     public static String getAuthorizationToken() {
@@ -76,6 +77,10 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        if (EMPLOYEE.equals(roleUser) && isEmployee(request.getRequestURI())) {
+            return true;
+        }
+
         throw new UserNotRoleAuthorized();
     }
 
@@ -107,6 +112,11 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     private boolean isClientOrder(String requestURI) {
         return requestURI.startsWith("/smallsquare/order");
+
+    }
+
+    private boolean isEmployee(String requestURI) {
+        return requestURI.startsWith("/smallsquare/orders/byState");
 
     }
 

@@ -2,11 +2,14 @@ package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handler
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.OrderPlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.OrderRequestDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IOrderHandler;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderPlateRequestMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderRequestMapper;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
+import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +21,7 @@ public class OrderHandlerImpl implements IOrderHandler {
     private final IOrderServicePort orderServicePort;
     private final IOrderPlateRequestMapper orderPlateRequestMapper;
     private final IOrderRequestMapper orderRequestMapper;
-
-
+    private final IOrderResponseMapper orderResponseMapper;
 
     @Override
     public void saveOrder(OrderRequestDto orderRequestDto) {
@@ -41,5 +43,10 @@ public class OrderHandlerImpl implements IOrderHandler {
                orderServicePort.saveOrderPlate(orderPlateRequestMapper.toOrderPlate(orderPlateRequestDto));
 
         }
+    }
+
+    @Override
+    public List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
+        return orderResponseMapper.toResponseList(orderServicePort.getAllOrdersByStateEnum(stateEnum, page,size));
     }
 }
