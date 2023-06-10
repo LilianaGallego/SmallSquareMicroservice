@@ -22,6 +22,5 @@ public class OrderPlateEntity {
     @ManyToOne
     @JoinColumn(name = "id_plate")
     private PlateEntity plateEntity;
-
-    private int cantidad;
+    private int quantity;
 }

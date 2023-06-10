@@ -15,6 +15,6 @@ public interface IOrderPlateEntityMapper {
     OrderPlateEntity toEntity(OrderPlate orderPlate);
 
     @Mapping(target = "order.id", source = "orderEntity.id")
-    @Mapping(target = "plate.id", source = "orderEntity.id")
+    @Mapping(target = "plate.id", source = "plateEntity.id")
     OrderPlate toOrderPlate(OrderPlateEntity orderPlate);
 }

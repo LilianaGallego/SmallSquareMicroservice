@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IOrderRepository extends JpaRepository<OrderEntity, Long> {
     OrderEntity findByIdClient(Long idClient);
+    boolean existsByIdClient(Long idClient);
+
 }
