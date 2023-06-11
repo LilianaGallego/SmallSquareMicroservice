@@ -3,7 +3,6 @@ package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.control
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.PlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.UpdatePlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.PlateResponseDto;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.RestaurantPageableResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IPlateHandler;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
 import org.junit.jupiter.api.BeforeEach;
@@ -95,6 +94,20 @@ class PlateRestControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(plateResponseDtos, response.getBody());
+    }
+
+    @Test
+    @DisplayName("Given a valid plate, when updatePlate is called, then a UPDATED response is returned")
+    void testUpdateStatusPlate() {
+        // Arrange
+        Mockito.doNothing().when(plateHandler).updateStatusPlate(1L);
+
+        // Act
+        ResponseEntity<Map<String, String>> responseEntity = restController.updateStatusPlate(1L);
+
+        // Assert
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(Constants.PLATE_UPDATED_MESSAGE, responseEntity.getBody().get(Constants.RESPONSE_MESSAGE_KEY));
     }
 
 }
