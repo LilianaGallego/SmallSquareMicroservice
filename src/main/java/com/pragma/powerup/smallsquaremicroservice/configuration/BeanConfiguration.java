@@ -87,11 +87,11 @@ public class BeanConfiguration {
 
     @Bean
     public IOrderPersistencePort orderPersistencePort() {
-        return new OrderMysqlAdapter(orderEntityMapper,orderPlateEntityMapper, orderRepository, orderPlateRepository,restaurantRepository );
+        return new OrderMysqlAdapter(orderEntityMapper,orderPlateEntityMapper, orderRepository, orderPlateRepository);
     }
 
     @Bean
     public IOrderServicePort orderServicePort() {
-        return new OrderUseCase(orderPersistencePort(),restaurantPersistencePort());
+        return new OrderUseCase(orderPersistencePort(),restaurantPersistencePort(), restaurantEmployeePersistencePort());
     }
 }

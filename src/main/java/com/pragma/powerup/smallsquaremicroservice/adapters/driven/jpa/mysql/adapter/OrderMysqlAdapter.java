@@ -1,20 +1,17 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.adapter;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.OrderEntity;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.OrderInProcessesException;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.NoDataFoundException;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IOrderEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IOrderPlateEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IOrderPlateRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IOrderRepository;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantRepository;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.PageNoValidException;
-import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.RestaurantNotExistException;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,7 +28,6 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
 
     private final IOrderRepository orderRepository;
     private final IOrderPlateRepository orderPlateRepository;
-    private final IRestaurantRepository restaurantRepository;
     private static OrderEntity orderEntity;
     public static OrderEntity getOrderEntity() {
         return orderEntity;
@@ -39,13 +35,8 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
 
     @Override
     public void saveOrder(Order order) {
-        OrderEntity orderBD = orderRepository.findByIdClient(order.getIdClient());
-        if(orderBD != null  && (orderBD.getState().equals(StateEnum.READY) || orderBD.getState().equals(StateEnum.PREPARATION) || orderBD.getState().equals(StateEnum.EARNING))){
 
-            throw new OrderInProcessesException();
-        }
-
-        order.setState(StateEnum.EARNING);
+        order.setStateEnum(StateEnum.EARNING);
         orderEntity = orderRepository.save(orderEntityMapper.toEntity(order));
     }
 
@@ -57,18 +48,31 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
     }
 
     @Override
-    public List<Order> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
+    public boolean existsByIdClient(Long idClient) {
+        return orderRepository.existsByIdClient(idClient);
+    }
 
-        Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(page, size,sort);
+    @Override
+    public OrderEntity findByIdClient(Long idClient) {
+        return orderRepository.findByIdClient(idClient);
+    }
+
+
+
+    @Override
+    public List<Order> getAllOrdersByStateEnum(StateEnum state,Long idRestaurant, int page, int size) {
+
+
+        Pageable pageable = PageRequest.of(page, size);
         if (page < 0 || page >= pageable.getPageSize()) {
             throw new PageNoValidException();
 
         }
-        Page<OrderEntity> orderEntities = orderRepository.findAllByState(stateEnum,pageable);
+
+        List<OrderEntity> orderEntities = orderRepository.findAllByStateEnumAndRestaurantEntityId(state.name(),idRestaurant,pageable);
         if (orderEntities.isEmpty()) {
-            throw new RestaurantNotExistException();
+            throw new NoDataFoundException();
         }
-        return orderEntityMapper.toOrderList(orderEntities.getContent());
+        return orderEntityMapper.toOrderList(orderEntities);
     }
 }

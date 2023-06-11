@@ -4,5 +4,6 @@ import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmplo
 
 public interface IRestaurantEmployeePersistencePort {
     void saveRestaurantEmployee(RestaurantEmployee restaurantEmployee);
+    RestaurantEmployee getRestaurantEmployeeByIdEmployee(Long idEmployee);
 
 }

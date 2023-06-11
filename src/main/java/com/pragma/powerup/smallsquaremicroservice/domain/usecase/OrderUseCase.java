@@ -1,11 +1,15 @@
 package com.pragma.powerup.smallsquaremicroservice.domain.usecase;
 
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.OrderEntity;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.OrderInProcessesException;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 
@@ -16,11 +20,14 @@ public class OrderUseCase implements IOrderServicePort {
 
     private final IOrderPersistencePort orderPersistencePort;
     private final IRestaurantPersistencePort  restaurantPersistencePort;
+    private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
 
 
-    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort) {
+
+    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort) {
         this.orderPersistencePort = orderPersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
+        this.restaurantEmployeePersistencePort = restaurantEmployeePersistencePort;
     }
 
 
@@ -29,6 +36,10 @@ public class OrderUseCase implements IOrderServicePort {
     public void saveOrder(Long idRestaurant, Order order) {
         Restaurant restaurant = restaurantPersistencePort.findById(idRestaurant);
         order.setIdClient(TokenInterceptor.getIdUser());
+        if (orderPersistencePort.existsByIdClient(order.getIdClient())) {
+            OrderEntity orderBD = orderPersistencePort.findByIdClient(order.getIdClient());
+            validateState(orderBD,order,restaurant);
+        }
         order.setDate(LocalDate.now());
         order.setRestaurant(restaurant);
         orderPersistencePort.saveOrder(order);
@@ -42,9 +53,24 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     @Override
-    public List<Order> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
-        return orderPersistencePort.getAllOrdersByStateEnum(stateEnum, page, size);
+    public void validateState(OrderEntity orderBD, Order order, Restaurant restaurant) {
+        switch (orderBD.getStateEnum()){
+            case "LISTO","PENDIENTE","PREPARACION" -> throw new OrderInProcessesException();
+            case "CANCELADO","ENTREGADO" -> {
+                order.setStateEnum(StateEnum.EARNING);
+                order.setIdClient(TokenInterceptor.getIdUser());
+                order.setDate(LocalDate.now());
+                order.setRestaurant(restaurant);
+                orderPersistencePort.saveOrder(order);
+            }
+        }
     }
-
+    @Override
+    public List<Order> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
+        Long IdEmployee = TokenInterceptor.getIdUser();
+        RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(IdEmployee);
+        Long idRestaurant = restaurantEmployee.getIdRestaurant();
+        return orderPersistencePort.getAllOrdersByStateEnum(stateEnum, idRestaurant,page, size);
+    }
 
 }

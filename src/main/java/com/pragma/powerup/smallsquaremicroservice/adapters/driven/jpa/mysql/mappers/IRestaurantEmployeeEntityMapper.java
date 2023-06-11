@@ -10,4 +10,6 @@ import org.mapstruct.ReportingPolicy;
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IRestaurantEmployeeEntityMapper {
     RestaurantEmployeeEntity toEntity(RestaurantEmployee restaurantEmployee);
+
+    RestaurantEmployee toRestaurantEmployee(RestaurantEmployeeEntity restaurantEmployeeEntity);
 }

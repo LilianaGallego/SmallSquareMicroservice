@@ -4,4 +4,5 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.enti
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IRestaurantEmployeeRepository extends JpaRepository<RestaurantEmployeeEntity, Long> {
+    RestaurantEmployeeEntity getRestaurantEmployeeByIdEmployee(Long idEmployee);
 }

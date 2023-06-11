@@ -36,10 +36,7 @@ public class OrderHandlerImpl implements IOrderHandler {
 
         OrderPlateRequestDto orderPlateRequestDto = new OrderPlateRequestDto();
         for (int i = 0; i < orderPlates.size(); i++) {
-
                orderPlateRequestDto = orderPlates.get(i);
-
-
                orderServicePort.saveOrderPlate(orderPlateRequestMapper.toOrderPlate(orderPlateRequestDto));
 
         }
