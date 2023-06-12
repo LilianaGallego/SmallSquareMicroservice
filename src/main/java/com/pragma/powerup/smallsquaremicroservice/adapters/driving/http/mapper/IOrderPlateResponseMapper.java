@@ -16,5 +16,11 @@ public interface IOrderPlateResponseMapper {
     @Mapping(target = "idPlate", source = "plate.id")
     OrderPlateResponseDto toResponse(OrderPlate orderPlate);
 
+    @Mapping(target = "order.id", source = "idOrder")
+    @Mapping(target = "plate.id", source = "idPlate")
+    OrderPlate toOrderPlate(OrderPlateResponseDto orderPlateResponseDto);
+
     List<OrderPlateResponseDto> toResponseList(List<OrderPlate> orderList);
+    List<OrderPlate> toOrderPlateList(List<OrderPlateResponseDto> orderList);
+
 }

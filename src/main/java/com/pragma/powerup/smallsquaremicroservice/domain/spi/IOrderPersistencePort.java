@@ -14,4 +14,5 @@ public interface IOrderPersistencePort {
     boolean existsByIdClient(Long idClient);
     OrderEntity findByIdClient(Long idClient);
     List<Order> getAllOrdersByStateEnum(StateEnum stateEnum, Long idRestaurant, int page, int size);
+    List<OrderPlate> getAllOrdersByOrder(Order order);
 }

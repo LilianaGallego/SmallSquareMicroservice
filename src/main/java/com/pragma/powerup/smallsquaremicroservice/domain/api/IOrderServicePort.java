@@ -14,4 +14,6 @@ public interface IOrderServicePort {
     void validateState(OrderEntity orderBD, Order order, Restaurant restaurant);
     List<Order> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size);
 
+    List<OrderPlate> getAllOrdersByOrder(Order order);
+
 }

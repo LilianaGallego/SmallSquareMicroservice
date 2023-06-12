@@ -1,6 +1,7 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.adapter;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.OrderEntity;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.OrderPlateEntity;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.NoDataFoundException;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IOrderEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IOrderPlateEntityMapper;
@@ -73,6 +74,19 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
         if (orderEntities.isEmpty()) {
             throw new NoDataFoundException();
         }
-        return orderEntityMapper.toOrderList(orderEntities);
+        List<Order> orders =orderEntityMapper.toOrderList(orderEntities);
+        for (Order order : orders) {
+            //List<OrderPlate> orderPlates = order.getOrderPlates();
+            order.setOrderPlates(getAllOrdersByOrder(order));
+
+        }
+        return orders ;
+    }
+
+    @Override
+    public List<OrderPlate> getAllOrdersByOrder(Order order) {
+        List<OrderPlateEntity> orderPlateEntities = orderPlateRepository.getAllByOrderEntityId(orderEntityMapper.toEntity(order).getId());
+
+        return orderPlateEntityMapper.toOrderPlateList(orderPlateEntities);
     }
 }

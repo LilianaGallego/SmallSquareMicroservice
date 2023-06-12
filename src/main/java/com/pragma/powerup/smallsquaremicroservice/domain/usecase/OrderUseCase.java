@@ -73,4 +73,10 @@ public class OrderUseCase implements IOrderServicePort {
         return orderPersistencePort.getAllOrdersByStateEnum(stateEnum, idRestaurant,page, size);
     }
 
+    @Override
+    public List<OrderPlate> getAllOrdersByOrder(Order order) {
+
+        return orderPersistencePort.getAllOrdersByOrder(order);
+    }
+
 }
