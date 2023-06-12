@@ -7,6 +7,10 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mapp
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IOrderPlateEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IOrderPlateRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IOrderRepository;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderPlateResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderPlateResponseMapper;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.PageNoValidException;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
@@ -15,7 +19,6 @@ import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -26,6 +29,8 @@ import java.util.List;
 public class OrderMysqlAdapter implements IOrderPersistencePort {
     private final IOrderEntityMapper orderEntityMapper;
     private final IOrderPlateEntityMapper orderPlateEntityMapper;
+    private final IOrderPlateResponseMapper orderPlateResponseMapper;
+    private final IOrderResponseMapper orderResponseMapper;
 
     private final IOrderRepository orderRepository;
     private final IOrderPlateRepository orderPlateRepository;
@@ -61,7 +66,7 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
 
 
     @Override
-    public List<Order> getAllOrdersByStateEnum(StateEnum state,Long idRestaurant, int page, int size) {
+    public List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum state, Long idRestaurant, int page, int size) {
 
 
         Pageable pageable = PageRequest.of(page, size);
@@ -75,18 +80,18 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
             throw new NoDataFoundException();
         }
         List<Order> orders =orderEntityMapper.toOrderList(orderEntities);
-        for (Order order : orders) {
-            //List<OrderPlate> orderPlates = order.getOrderPlates();
+        List<OrderResponseDto> orderResponseDtos = orderResponseMapper.toResponseList(orders);
+        for (OrderResponseDto order : orderResponseDtos) {
             order.setOrderPlates(getAllOrdersByOrder(order));
 
         }
-        return orders ;
+        return orderResponseDtos ;
     }
 
     @Override
-    public List<OrderPlate> getAllOrdersByOrder(Order order) {
-        List<OrderPlateEntity> orderPlateEntities = orderPlateRepository.getAllByOrderEntityId(orderEntityMapper.toEntity(order).getId());
-
-        return orderPlateEntityMapper.toOrderPlateList(orderPlateEntities);
+    public List<OrderPlateResponseDto> getAllOrdersByOrder(OrderResponseDto order) {
+        List<OrderPlateEntity> orderPlateEntities = orderPlateRepository.getAllByOrderEntityId(order.getId());
+        return orderPlateResponseMapper.toResponseList(orderPlateEntityMapper.toOrderPlateList(orderPlateEntities));
     }
+
 }

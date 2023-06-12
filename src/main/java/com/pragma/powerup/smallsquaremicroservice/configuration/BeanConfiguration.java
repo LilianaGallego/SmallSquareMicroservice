@@ -5,6 +5,8 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mapp
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.*;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.EmployeeHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.OwnerHttpAdapter;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderPlateResponseMapper;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.ICategoryServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IPlateServicePort;
@@ -39,6 +41,9 @@ public class BeanConfiguration {
 
     private final IOrderPlateEntityMapper orderPlateEntityMapper;
     private final IOrderPlateRepository orderPlateRepository;
+    private final IOrderPlateResponseMapper orderPlateResponseMapper;
+    private final IOrderResponseMapper orderResponseMapper;
+
 
 
     @Bean
@@ -87,7 +92,7 @@ public class BeanConfiguration {
 
     @Bean
     public IOrderPersistencePort orderPersistencePort() {
-        return new OrderMysqlAdapter(orderEntityMapper,orderPlateEntityMapper, orderRepository, orderPlateRepository);
+        return new OrderMysqlAdapter(orderEntityMapper,orderPlateEntityMapper, orderPlateResponseMapper, orderResponseMapper,orderRepository, orderPlateRepository);
     }
 
     @Bean
