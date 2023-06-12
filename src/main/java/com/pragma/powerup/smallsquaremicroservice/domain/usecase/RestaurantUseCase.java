@@ -125,6 +125,11 @@ public class RestaurantUseCase implements IRestaurantServicePort {
     }
 
     @Override
+    public RestaurantEmployee getRestaurantEmployeeByIdEmployee(Long idEmployee) {
+        return restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee);
+    }
+
+    @Override
     public void validateOwner(Long idRestaurant) {
         Optional<RestaurantEntity> restaurantEntityOptional ;
         if(restaurantRepository.findById(idRestaurant).isEmpty()){

@@ -4,24 +4,30 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.enti
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.OrderInProcessesException;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class OrderUseCase implements IOrderServicePort {
 
     private final IOrderPersistencePort orderPersistencePort;
     private final IRestaurantPersistencePort  restaurantPersistencePort;
+    private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
 
 
-    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort) {
+
+    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort) {
         this.orderPersistencePort = orderPersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
+        this.restaurantEmployeePersistencePort = restaurantEmployeePersistencePort;
     }
 
 
@@ -48,10 +54,10 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void validateState(OrderEntity orderBD, Order order, Restaurant restaurant) {
-        switch (orderBD.getState()){
-            case READY,EARNING,PREPARATION -> throw new OrderInProcessesException();
-            case CANCELLED,DELIVERED -> {
-                order.setState(StateEnum.EARNING);
+        switch (orderBD.getStateEnum()){
+            case "LISTO","PENDIENTE","PREPARACION" -> throw new OrderInProcessesException();
+            case "CANCELADO","ENTREGADO" -> {
+                order.setStateEnum(StateEnum.EARNING);
                 order.setIdClient(TokenInterceptor.getIdUser());
                 order.setDate(LocalDate.now());
                 order.setRestaurant(restaurant);
@@ -59,6 +65,18 @@ public class OrderUseCase implements IOrderServicePort {
             }
         }
     }
+    @Override
+    public List<Order> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
+        Long IdEmployee = TokenInterceptor.getIdUser();
+        RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(IdEmployee);
+        Long idRestaurant = restaurantEmployee.getIdRestaurant();
+        return orderPersistencePort.getAllOrdersByStateEnum(stateEnum, idRestaurant,page, size);
+    }
 
+    @Override
+    public List<OrderPlate> getAllOrdersByOrder(Order order) {
+
+        return orderPersistencePort.getAllOrdersByOrder(order);
+    }
 
 }

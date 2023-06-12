@@ -1,8 +1,10 @@
 package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.controller;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.OrderRequestDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IOrderHandler;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
+import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,12 +13,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -38,5 +38,19 @@ public class OrderRestController {
         orderHandler.saveOrder(orderRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.ORDER_CREATED_MESSAGE));
+    }
+
+    @SecurityRequirement(name = "jwt")
+    @Operation(summary = "Get all orders by state",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Orders by state",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
+                    @ApiResponse(responseCode = "404", description = "Plate not found ",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+            })
+    @GetMapping("/orders/byState")
+    public ResponseEntity<List<OrderResponseDto>> getAllOrdersByStateEnum(@RequestParam StateEnum stateEnum,@RequestParam int page, @RequestParam int size) {
+
+        return ResponseEntity.ok(orderHandler.getAllOrdersByStateEnum(stateEnum,page, size));
     }
 }

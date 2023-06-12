@@ -4,25 +4,28 @@ package com.pragma.powerup.smallsquaremicroservice.domain.model;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Order {
     private Long id;
     private Long idClient;
     private LocalDate date;
-    private StateEnum state;
+    private StateEnum stateEnum;
     private Long idChef;
     private Restaurant restaurant;
+    private List<OrderPlate> orderPlatesList;
 
     public Order() {
     }
 
-    public Order(Long id, Long idClient, LocalDate date, StateEnum state, Long idChef, Restaurant restaurant) {
+    public Order(Long id, Long idClient, LocalDate date, StateEnum stateEnum, Long idChef, Restaurant restaurant, List<OrderPlate> orderPlates) {
         this.id = id;
         this.idClient = idClient;
         this.date = date;
-        this.state = state;
+        this.stateEnum = stateEnum;
         this.idChef = idChef;
         this.restaurant = restaurant;
+        this.orderPlatesList = orderPlates;
     }
 
     public Long getId() {
@@ -49,12 +52,12 @@ public class Order {
         this.date = date;
     }
 
-    public StateEnum getState() {
-        return state;
+    public StateEnum getStateEnum() {
+        return stateEnum;
     }
 
-    public void setState(StateEnum state) {
-        this.state = state;
+    public void setStateEnum(StateEnum stateEnum) {
+        this.stateEnum = stateEnum;
     }
 
     public Long getIdChef() {
@@ -71,5 +74,13 @@ public class Order {
 
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
+    }
+
+    public List<OrderPlate> getOrderPlates() {
+        return orderPlatesList;
+    }
+
+    public void setOrderPlates(List<OrderPlate> orderPlates) {
+        this.orderPlatesList = orderPlates;
     }
 }
