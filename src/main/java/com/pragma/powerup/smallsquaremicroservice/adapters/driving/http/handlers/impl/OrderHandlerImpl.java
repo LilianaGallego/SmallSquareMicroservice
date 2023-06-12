@@ -44,10 +44,8 @@ public class OrderHandlerImpl implements IOrderHandler {
 
     @Override
     public List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
-        List<Order> orders = orderServicePort.getAllOrdersByStateEnum(stateEnum, page,size);
-        List<OrderResponseDto> orderResponseDtos = orderResponseMapper.toResponseList(orders);
 
-        return orderResponseDtos;
+        return orderServicePort.getAllOrdersByStateEnum(stateEnum, page,size);
     }
 
 }

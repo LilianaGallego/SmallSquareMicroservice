@@ -2,6 +2,8 @@ package com.pragma.powerup.smallsquaremicroservice.domain.usecase;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.OrderEntity;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.OrderInProcessesException;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderPlateResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
@@ -66,15 +68,15 @@ public class OrderUseCase implements IOrderServicePort {
         }
     }
     @Override
-    public List<Order> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
-        Long IdEmployee = TokenInterceptor.getIdUser();
-        RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(IdEmployee);
+    public List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
+
+        RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(TokenInterceptor.getIdUser());
         Long idRestaurant = restaurantEmployee.getIdRestaurant();
         return orderPersistencePort.getAllOrdersByStateEnum(stateEnum, idRestaurant,page, size);
     }
 
     @Override
-    public List<OrderPlate> getAllOrdersByOrder(Order order) {
+    public List<OrderPlateResponseDto> getAllOrdersByOrder(OrderResponseDto order) {
 
         return orderPersistencePort.getAllOrdersByOrder(order);
     }

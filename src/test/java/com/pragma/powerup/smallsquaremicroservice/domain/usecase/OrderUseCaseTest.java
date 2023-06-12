@@ -4,6 +4,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.enti
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.RestaurantEmployeeEntity;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.RestaurantEntity;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.OrderInProcessesException;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
@@ -145,9 +146,9 @@ class OrderUseCaseTest {
         int size = 10;
         Long idEmployee = 123L;
         Long idRestaurant = 456L;
-        List<Order> expectedOrders = new ArrayList<>();
-        expectedOrders.add(new Order());
-        expectedOrders.add(new Order());
+        List<OrderResponseDto> expectedOrders = new ArrayList<>();
+        expectedOrders.add(new OrderResponseDto());
+        expectedOrders.add(new OrderResponseDto());
         RestaurantEmployeeEntity restaurantEmployeeEntity = new RestaurantEmployeeEntity(10L,idEmployee,idRestaurant);
 
         RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee,idRestaurant);
@@ -156,7 +157,7 @@ class OrderUseCaseTest {
         when(orderPersistencePort.getAllOrdersByStateEnum(stateEnum, idRestaurant, page, size)).thenReturn(expectedOrders);
 
         // Act
-        List<Order> actualOrders = orderUseCase.getAllOrdersByStateEnum(stateEnum, page, size);
+        List<OrderResponseDto> actualOrders = orderUseCase.getAllOrdersByStateEnum(stateEnum, page, size);
 
         // Assert
         assertEquals(expectedOrders, actualOrders);

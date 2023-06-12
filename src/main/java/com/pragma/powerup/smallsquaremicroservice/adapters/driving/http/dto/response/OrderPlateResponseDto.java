@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class OrderPlateResponseDto {
-    private Long idOrder;
+
     private Long idPlate;
     private int quantity;
 }
