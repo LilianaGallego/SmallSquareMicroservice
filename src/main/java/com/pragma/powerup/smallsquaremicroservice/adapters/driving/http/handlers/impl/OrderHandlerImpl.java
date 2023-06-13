@@ -38,7 +38,6 @@ public class OrderHandlerImpl implements IOrderHandler {
         for (int i = 0; i < orderPlates.size(); i++) {
                orderPlateRequestDto = orderPlates.get(i);
                orderServicePort.saveOrderPlate(orderPlateRequestMapper.toOrderPlate(orderPlateRequestDto));
-
         }
     }
 
@@ -46,6 +45,12 @@ public class OrderHandlerImpl implements IOrderHandler {
     public List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
 
         return orderServicePort.getAllOrdersByStateEnum(stateEnum, page,size);
+    }
+
+    @Override
+    public List<OrderResponseDto> updateStatusOrder(Long idOrder, StateEnum stateEnum, int page, int size) {
+        orderServicePort.updateStatusOrder(idOrder, stateEnum, page, size);
+        return orderServicePort.getAllOrdersByStateEnum(stateEnum, page, size);
     }
 
 }

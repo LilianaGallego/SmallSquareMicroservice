@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RequiredArgsConstructor
@@ -59,10 +60,19 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
     }
 
     @Override
+    public boolean existsById(Long idOrder) {
+        return orderRepository.existsById(idOrder);
+    }
+
+    @Override
     public OrderEntity findByIdClient(Long idClient) {
         return orderRepository.findByIdClient(idClient);
     }
 
+    @Override
+    public Optional<OrderEntity> findById(Long idOrder) {
+        return orderRepository.findById(idOrder);
+    }
 
 
     @Override
@@ -93,5 +103,14 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
         List<OrderPlateEntity> orderPlateEntities = orderPlateRepository.getAllByOrderEntityId(order.getId());
         return orderPlateResponseMapper.toResponseList(orderPlateEntityMapper.toOrderPlateList(orderPlateEntities));
     }
+
+    @Override
+    public List<OrderResponseDto> updateStatusOrder(OrderEntity order, StateEnum stateEnum, Long idRestaurant, int page, int size) {
+        orderRepository.save(order);
+        return getAllOrdersByStateEnum(stateEnum, idRestaurant, page,size);
+
+    }
+
+
 
 }

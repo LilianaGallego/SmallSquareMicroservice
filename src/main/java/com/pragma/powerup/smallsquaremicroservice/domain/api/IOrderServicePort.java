@@ -14,8 +14,10 @@ public interface IOrderServicePort {
     void saveOrder(Long idRestaurant, Order order);
     void saveOrderPlate(OrderPlate orderPlate);
     void validateState(OrderEntity orderBD, Order order, Restaurant restaurant);
+    void validateRestaurant(OrderEntity orderBD, Long idEmployee);
     List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size);
 
     List<OrderPlateResponseDto> getAllOrdersByOrder(OrderResponseDto order);
+    List<OrderResponseDto> updateStatusOrder(Long idOrder, StateEnum stateEnum, int page, int size);
 
 }

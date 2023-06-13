@@ -81,6 +81,10 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        if (EMPLOYEE.equals(roleUser) && isChef(request.getRequestURI())) {
+            return true;
+        }
+
         throw new UserNotRoleAuthorized();
     }
 
@@ -119,6 +123,11 @@ public class TokenInterceptor implements HandlerInterceptor {
         return requestURI.startsWith("/smallsquare/orders/byState");
 
     }
+    private boolean isChef(String requestURI) {
+        return requestURI.startsWith("/smallsquare/order/state");
+
+    }
+
 
 }
 
