@@ -1,9 +1,11 @@
 package com.pragma.powerup.smallsquaremicroservice.domain.usecase;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.OrderEntity;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.NoDataFoundException;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.OrderInProcessesException;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderPlateResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.exceptions.PlateNoFromRestautantException;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
@@ -17,6 +19,7 @@ import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class OrderUseCase implements IOrderServicePort {
 
@@ -67,6 +70,9 @@ public class OrderUseCase implements IOrderServicePort {
             }
         }
     }
+
+
+
     @Override
     public List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
 
@@ -79,6 +85,32 @@ public class OrderUseCase implements IOrderServicePort {
     public List<OrderPlateResponseDto> getAllOrdersByOrder(OrderResponseDto order) {
 
         return orderPersistencePort.getAllOrdersByOrder(order);
+    }
+
+    @Override
+    public List<OrderResponseDto> updateStatusOrder(Long idOrder, StateEnum stateEnum, int page, int size) {
+        if(orderPersistencePort.existsById(idOrder)){
+            Optional<OrderEntity> order = orderPersistencePort.findById(idOrder);
+            Long idEmployee = TokenInterceptor.getIdUser();
+            order.get().setStateEnum(stateEnum.name());
+            validateRestaurant(order.get(),idEmployee);
+            return orderPersistencePort.updateStatusOrder(order.get(), stateEnum, order.get().getRestaurantEntity().getId(), page, size);
+        }
+        throw new NoDataFoundException();
+
+    }
+
+    @Override
+    public void validateRestaurant(OrderEntity orderBD,Long idEmployee) {
+        Long idRestauratOrder = orderBD.getRestaurantEntity().getId();
+        Long idRestauntEmployee = restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee).getIdRestaurant();
+        if (!idRestauntEmployee.equals(idRestauratOrder)){
+            throw new PlateNoFromRestautantException();
+        }
+        orderBD.setIdChef(idEmployee);
+
+
+
     }
 
 }

@@ -53,4 +53,16 @@ public class OrderRestController {
 
         return ResponseEntity.ok(orderHandler.getAllOrdersByStateEnum(stateEnum,page, size));
     }
+
+    @Operation(summary = "Updated state order",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Updated order",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
+                    @ApiResponse(responseCode = "409", description = "Order no exists",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+            })
+    @PatchMapping("/order/state/{idOrder}")
+    public ResponseEntity<List<OrderResponseDto>> updateStateOrder( @PathVariable Long idOrder, @RequestParam StateEnum stateEnum,@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(orderHandler.updateStatusOrder(idOrder, stateEnum, page, size));
+    }
 }

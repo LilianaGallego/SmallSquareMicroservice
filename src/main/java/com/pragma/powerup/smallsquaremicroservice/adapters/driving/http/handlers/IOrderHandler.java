@@ -10,4 +10,5 @@ public interface IOrderHandler {
     void saveOrder(OrderRequestDto orderRequestDto);
     void saveOrderPlate(OrderRequestDto orderRequestDto);
     List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size);
+    List<OrderResponseDto> updateStatusOrder(Long idOrder,StateEnum stateEnum, int page, int size);
 }

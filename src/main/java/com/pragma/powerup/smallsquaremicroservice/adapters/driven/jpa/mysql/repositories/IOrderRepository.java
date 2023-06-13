@@ -9,6 +9,7 @@ import java.util.List;
 public interface IOrderRepository extends JpaRepository<OrderEntity, Long> {
     OrderEntity findByIdClient(Long idClient);
     boolean existsByIdClient(Long idClient);
+    boolean existsById(Long id);
    List<OrderEntity> findAllByStateEnumAndRestaurantEntityId(String stateEnum, Long idRestaurant, Pageable pageable);
 
 }
