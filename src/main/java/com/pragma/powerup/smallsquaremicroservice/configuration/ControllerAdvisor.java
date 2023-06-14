@@ -129,4 +129,11 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, ORDER_IN_PROCESSES));
     }
+
+    @ExceptionHandler(NotStatusInProcess.class)
+    public ResponseEntity<Map<String, String>> handleNotStatusInProcess(
+            NotStatusInProcess notStatusInProcess) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, ORDER_STATE_NOT_VALID_MESSAGE));
+    }
 }

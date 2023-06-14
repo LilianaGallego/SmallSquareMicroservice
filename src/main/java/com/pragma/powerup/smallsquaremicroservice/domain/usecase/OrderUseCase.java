@@ -9,13 +9,16 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.exceptio
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
+import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.NotStatusInProcess;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IMessangerServicePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,13 +29,20 @@ public class OrderUseCase implements IOrderServicePort {
     private final IOrderPersistencePort orderPersistencePort;
     private final IRestaurantPersistencePort  restaurantPersistencePort;
     private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
+    private final IMessangerServicePersistencePort messengerServicePersistencePort;
+    @Setter
+    private static int code;
+    public static int getCode() {
+        return code;
+    }
 
 
 
-    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort) {
+    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IMessangerServicePersistencePort messengerServicePersistencePort) {
         this.orderPersistencePort = orderPersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.restaurantEmployeePersistencePort = restaurantEmployeePersistencePort;
+        this.messengerServicePersistencePort = messengerServicePersistencePort;
     }
 
 
@@ -71,8 +81,6 @@ public class OrderUseCase implements IOrderServicePort {
         }
     }
 
-
-
     @Override
     public List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
 
@@ -94,6 +102,7 @@ public class OrderUseCase implements IOrderServicePort {
             Long idEmployee = TokenInterceptor.getIdUser();
             order.get().setStateEnum(stateEnum.name());
             validateRestaurant(order.get(),idEmployee);
+
             return orderPersistencePort.updateStatusOrder(order.get(), stateEnum, order.get().getRestaurantEntity().getId(), page, size);
         }
         throw new NoDataFoundException();
@@ -109,8 +118,42 @@ public class OrderUseCase implements IOrderServicePort {
         }
         orderBD.setIdChef(idEmployee);
 
+    }
+
+    @Override
+    public void updateOrderReady(Long idOrder,StateEnum stateEnum) {
+        if(orderPersistencePort.existsById(idOrder)){
+            Optional<OrderEntity> order = orderPersistencePort.findById(idOrder);
+            Long idEmployee = TokenInterceptor.getIdUser();
+            validateRestaurant(order.get(),idEmployee);
+            validateStateOrder(order.get(),stateEnum);
+        }
+        throw new NoDataFoundException();
 
 
     }
+    @Override
+    public void validateStateOrder(OrderEntity order, StateEnum stateEnum){
+        if(order.getStateEnum().equals(StateEnum.PREPARATION.name())){
+            order.setStateEnum(stateEnum.name());
+            orderPersistencePort.updateOrderReady(order);
+            sendMessageOrderReady(order);
+        }
+        throw new NotStatusInProcess();
+    }
+
+    @Override
+    public void sendMessageOrderReady(OrderEntity order) {
+        code = generateCode();
+        String message= "Estimado cliente su pedido con id: " + order.getId()+ ".\nYa esta listo para reclamar con el siguiente codigo: " + code;
+        messengerServicePersistencePort.sendMessageOrderReady(message);
+
+    }
+    @Override
+    public int generateCode() {
+        return (int) (10000 + Math.random() * 90000);
+    }
+
+
 
 }

@@ -20,4 +20,10 @@ public interface IOrderServicePort {
     List<OrderPlateResponseDto> getAllOrdersByOrder(OrderResponseDto order);
     List<OrderResponseDto> updateStatusOrder(Long idOrder, StateEnum stateEnum, int page, int size);
 
+    void updateOrderReady(Long idOrder, StateEnum stateEnum);
+    void sendMessageOrderReady(OrderEntity order);
+    int generateCode();
+
+    void validateStateOrder(OrderEntity order, StateEnum stateEnum);
+
 }

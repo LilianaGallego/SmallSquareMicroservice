@@ -7,7 +7,9 @@
   </p >
    <p align="justify">
       The implementation of this microservice begins with the creation of the restaurant that a user with the role of 
-owner must have and the creation of a dish that belongs to a restaurant and that has an assigned category, update of the dish, security of the routes is added, The employee is created, the dish is enabled or disabled, all the restaurants are listed with pagination and the dishes are listed by category id and restaurant id
+owner must have and the creation of a dish that belongs to a restaurant and that has an assigned category, update of the dish, security of the routes is added, the employee is created, the dish is enabled or disabled, 
+all the restaurants are listed with pagination and the dishes are listed by category id and restaurant id by role consumer, @Setter
+    private static Long idUser;
 
    </p>
 
@@ -70,6 +72,17 @@ To get a local copy up and running follow these steps:
    ![img.png](img/img10.png)
 - List plates by restaurantId and categoryId
    ![img_1.png](img/img11.png)
+- Make an order by role consumer
+  ![img_1.png](img/img1.png)
+    ![img.png](img/img14.png)
+- List orders by state
+  ![img.png](img/img5.png)
+- Assing order and update state to preparation
+  ![img.png](img/img12.png)
+- Notify order ready
+    ![img.png](img/img13.png)
+    
+
 
 <!-- ROADMAP -->
 ## Tests
