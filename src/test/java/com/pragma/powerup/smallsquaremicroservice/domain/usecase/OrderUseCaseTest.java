@@ -314,9 +314,7 @@ class OrderUseCaseTest {
     void testUpdateOrderReady_NonExistingOrder_ExceptionThrown() {
         // Arrange
         Long idOrder = 1L;
-        StateEnum stateEnum = StateEnum.READY;
-        int page = 0;
-        int size = 10;
+        StateEnum stateEnum = StateEnum.READY;;
 
         when(orderPersistencePort.existsById(idOrder)).thenReturn(false);
 
