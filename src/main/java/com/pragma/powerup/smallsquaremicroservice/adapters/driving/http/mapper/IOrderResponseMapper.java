@@ -13,11 +13,11 @@ import java.util.List;
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IOrderResponseMapper {
     @Mapping(target = "idRestaurant", source = "restaurant.id")
-    @Mapping(target = "orderPlates", source = "orderPlates")
+    @Mapping(target = "orderPlates", source = "orderPlatesList")
     OrderResponseDto toResponse(Order order);
 
     @Mapping(target = "restaurant.id", source = "idRestaurant")
-    @Mapping(target = "orderPlates", source = "orderPlates")
+    @Mapping(target = "orderPlatesList", source = "orderPlates")
     Order toOrder(OrderResponseDto orderResponseDto);
     List<OrderResponseDto> toResponseList(List<Order> orderList);
 }

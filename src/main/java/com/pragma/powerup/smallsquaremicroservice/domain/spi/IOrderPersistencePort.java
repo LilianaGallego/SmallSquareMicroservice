@@ -22,4 +22,5 @@ public interface IOrderPersistencePort {
     List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, Long idRestaurant, int page, int size);
     List<OrderPlateResponseDto> getAllOrdersByOrder(OrderResponseDto order);
     List<OrderResponseDto> updateStatusOrder(OrderEntity order, StateEnum stateEnum, Long idRestaurant, int page, int size);
+    void updateOrderReady(OrderEntity order);
 }

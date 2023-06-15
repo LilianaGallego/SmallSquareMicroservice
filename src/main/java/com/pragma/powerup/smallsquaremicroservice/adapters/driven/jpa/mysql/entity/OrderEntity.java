@@ -25,5 +25,6 @@ public class OrderEntity {
     @ManyToOne
     @JoinColumn(name = "id_restaurant")
     private RestaurantEntity restaurantEntity;
+    private int code;
 
 }

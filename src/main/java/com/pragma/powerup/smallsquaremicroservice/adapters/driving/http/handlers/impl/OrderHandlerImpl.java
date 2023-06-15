@@ -53,4 +53,9 @@ public class OrderHandlerImpl implements IOrderHandler {
         return orderServicePort.getAllOrdersByStateEnum(stateEnum, page, size);
     }
 
+    @Override
+    public void updateOrderReady(Long idOrder, StateEnum stateEnum) {
+        orderServicePort.updateOrderReady(idOrder, stateEnum);
+    }
+
 }

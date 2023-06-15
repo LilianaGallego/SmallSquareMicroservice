@@ -14,18 +14,21 @@ public class Order {
     private Long idChef;
     private Restaurant restaurant;
     private List<OrderPlate> orderPlatesList;
+    private int code;
 
     public Order() {
     }
 
-    public Order(Long id, Long idClient, LocalDate date, StateEnum stateEnum, Long idChef, Restaurant restaurant, List<OrderPlate> orderPlates) {
+    public Order(Long id, Long idClient, LocalDate date, StateEnum stateEnum, Long idChef, Restaurant restaurant,
+                 List<OrderPlate> orderPlatesList, int code) {
         this.id = id;
         this.idClient = idClient;
         this.date = date;
         this.stateEnum = stateEnum;
         this.idChef = idChef;
         this.restaurant = restaurant;
-        this.orderPlatesList = orderPlates;
+        this.orderPlatesList = orderPlatesList;
+        this.code = code;
     }
 
     public Long getId() {
@@ -76,11 +79,19 @@ public class Order {
         this.restaurant = restaurant;
     }
 
-    public List<OrderPlate> getOrderPlates() {
+    public List<OrderPlate> getOrderPlatesList() {
         return orderPlatesList;
     }
 
-    public void setOrderPlates(List<OrderPlate> orderPlates) {
-        this.orderPlatesList = orderPlates;
+    public void setOrderPlatesList(List<OrderPlate> orderPlatesList) {
+        this.orderPlatesList = orderPlatesList;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
     }
 }

@@ -15,6 +15,9 @@ public class Constants {
 
     public static final String PLATE_CREATED_MESSAGE = "Plate created successfully";
     public static final String ORDER_CREATED_MESSAGE = "Order created successfully";
+    public static final String ORDER_STATE_READY_MESSAGE = "Order state is ready to be processed";
+
+    public static final String ORDER_STATE_NOT_VALID_MESSAGE = "The status of the order is not in process";
     public static final String PLATE_UPDATED_MESSAGE = "Plate updated successfully";
     public static final String RESPONSE_ERROR_MESSAGE_KEY = "error";
     public static final String RESPONSE_ERROR_MESSAGE_TOKEN= "A problem with the token has occurred";

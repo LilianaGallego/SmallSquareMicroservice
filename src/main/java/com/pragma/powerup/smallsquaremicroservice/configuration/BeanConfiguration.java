@@ -4,6 +4,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.adap
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.*;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.*;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.EmployeeHttpAdapter;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.MessangerServiceHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.OwnerHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderPlateResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderResponseMapper;
@@ -62,6 +63,12 @@ public class BeanConfiguration {
     @Bean
     public IOwnerHttpPersistencePort ownerPersistencePort() {return new OwnerHttpAdapter();}
 
+
+    @Bean
+    public IMessangerServicePersistencePort messengerServicePersistencePort() {
+        return new MessangerServiceHttpAdapter();
+    }
+
     @Bean
     public IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort() {
         return new RestaurantEmployeeMysqlAdapter(restaurantEmployeeRepository, restaurantEmployeeEntityMapper);
@@ -97,6 +104,6 @@ public class BeanConfiguration {
 
     @Bean
     public IOrderServicePort orderServicePort() {
-        return new OrderUseCase(orderPersistencePort(),restaurantPersistencePort(), restaurantEmployeePersistencePort());
+        return new OrderUseCase(orderPersistencePort(),restaurantPersistencePort(), restaurantEmployeePersistencePort(), messengerServicePersistencePort());
     }
 }
