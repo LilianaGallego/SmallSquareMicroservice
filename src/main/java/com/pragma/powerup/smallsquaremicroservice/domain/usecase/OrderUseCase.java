@@ -10,14 +10,13 @@ import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenIn
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.UserNotRoleAuthorized;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
+import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.NotStatusInProcess;
+import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.PhoneClientInvalidException;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IMessangerServicePersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.*;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 
 import java.time.LocalDate;
@@ -30,15 +29,17 @@ public class OrderUseCase implements IOrderServicePort {
     private final IRestaurantPersistencePort  restaurantPersistencePort;
     private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
     private final IMessangerServicePersistencePort messengerServicePersistencePort;
+    private final IUserHttpPersistencePort userHttpPersistencePort;
 
-    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IMessangerServicePersistencePort messengerServicePersistencePort) {
+    String phone = "+573118688145";
+
+    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IMessangerServicePersistencePort messengerServicePersistencePort, IUserHttpPersistencePort userHttpPersistencePort) {
         this.orderPersistencePort = orderPersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.restaurantEmployeePersistencePort = restaurantEmployeePersistencePort;
         this.messengerServicePersistencePort = messengerServicePersistencePort;
+        this.userHttpPersistencePort = userHttpPersistencePort;
     }
-
-
 
     @Override
     public void saveOrder(Long idRestaurant, Order order) {
@@ -117,6 +118,8 @@ public class OrderUseCase implements IOrderServicePort {
 
     }
 
+
+
     @Override
     public void updateOrderReady(Long idOrder,StateEnum stateEnum) {
         if(!orderPersistencePort.existsById(idOrder)){
@@ -129,11 +132,22 @@ public class OrderUseCase implements IOrderServicePort {
 
 
     }
+
     @Override
     public void validateStateOrder(OrderEntity order, StateEnum stateEnum){
 
         if(!order.getStateEnum().equals(StateEnum.PREPARATION.toString())){
             throw new NotStatusInProcess();
+        }
+        validatePhoneClient(order,stateEnum);
+
+    }
+
+    @Override
+    public void validatePhoneClient(OrderEntity order, StateEnum stateEnum) {
+        User user = userHttpPersistencePort.getClient(order.getIdClient());
+        if(!user.getPhone().equals(phone)){
+            throw new PhoneClientInvalidException();
         }
         order.setStateEnum(stateEnum.name());
         int code = generateCode();

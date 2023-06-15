@@ -10,7 +10,7 @@ import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IEmployeePersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOwnerHttpPersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IUserHttpPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IRestaurantServicePort;
@@ -26,21 +26,22 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     private final IRestaurantRepository restaurantRepository;
 
-    private final IOwnerHttpPersistencePort ownerHttpPersistencePort;
+    private final IUserHttpPersistencePort userHttpPersistencePort;
 
-    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IEmployeePersistencePort employeePersistencePort, IRestaurantRepository restaurantRepository, IOwnerHttpPersistencePort ownerHttpPersistencePort) {
+    public RestaurantUseCase(IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IEmployeePersistencePort employeePersistencePort, IRestaurantRepository restaurantRepository, IUserHttpPersistencePort userHttpPersistencePort) {
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.restaurantEmployeePersistencePort = restaurantEmployeePersistencePort;
         this.employeePersistencePort = employeePersistencePort;
         this.restaurantRepository = restaurantRepository;
-        this.ownerHttpPersistencePort = ownerHttpPersistencePort;
+        this.userHttpPersistencePort = userHttpPersistencePort;
     }
+
 
     @Override
     public void saveRestaurant(Restaurant restaurant) {
         Long id = restaurant.getIdOwner();
 
-        User user = ownerHttpPersistencePort.getOwner(id);
+        User user = userHttpPersistencePort.getOwner(id);
         if (!user.getIdRole().equals(Constants.OWNER_ROLE_ID) ){
             throw new UserNotRoleOwnerException();
         }

@@ -14,10 +14,7 @@ import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmplo
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IMessangerServicePersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.*;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,10 +44,13 @@ class OrderUseCaseTest {
 
     @Mock
     private IMessangerServicePersistencePort messengerServicePersistencePort;
+
+    @Mock
+    private IUserHttpPersistencePort userHttpPersistencePort;
     private IOrderServicePort orderUseCase;
     @BeforeEach
     void setUp() {
-        orderUseCase = new OrderUseCase(orderPersistencePort, restaurantPersistencePort, restaurantEmployeePersistencePort, messengerServicePersistencePort);
+        orderUseCase = new OrderUseCase(orderPersistencePort, restaurantPersistencePort, restaurantEmployeePersistencePort, messengerServicePersistencePort, userHttpPersistencePort);
     }
 
     @Test

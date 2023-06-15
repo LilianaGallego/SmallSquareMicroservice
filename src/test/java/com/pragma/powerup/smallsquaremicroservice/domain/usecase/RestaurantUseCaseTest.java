@@ -11,7 +11,7 @@ import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.*;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IEmployeePersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOwnerHttpPersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IUserHttpPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import org.junit.jupiter.api.Assertions;
@@ -46,7 +46,7 @@ class RestaurantUseCaseTest {
     @Mock
     private IEmployeePersistencePort employeePersistencePort;
     @Mock
-    private IOwnerHttpPersistencePort  ownerHttpPersistencePort;
+    private IUserHttpPersistencePort ownerHttpPersistencePort;
 
     private RestaurantUseCase restaurantUseCase;
 
