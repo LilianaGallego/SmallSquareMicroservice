@@ -48,10 +48,10 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void validateState(OrderEntity orderBD, Order order, Restaurant restaurant) {
-        switch (orderBD.getState()){
-            case READY,EARNING,PREPARATION -> throw new OrderInProcessesException();
-            case CANCELLED,DELIVERED -> {
-                order.setState(StateEnum.EARNING);
+        switch (orderBD.getStateEnum().toString()){
+            case "READY","EARNING","PREPARATION" -> throw new OrderInProcessesException();
+            case "CANCELLED","DELIVERED" -> {
+                order.setStateEnum(StateEnum.EARNING);
                 order.setIdClient(TokenInterceptor.getIdUser());
                 order.setDate(LocalDate.now());
                 order.setRestaurant(restaurant);

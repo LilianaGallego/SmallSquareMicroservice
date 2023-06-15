@@ -29,7 +29,7 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
     @Override
     public void saveOrder(Order order) {
 
-        order.setState(StateEnum.EARNING);
+        order.setStateEnum(StateEnum.EARNING);
         orderEntity = orderRepository.save(orderEntityMapper.toEntity(order));
     }
 

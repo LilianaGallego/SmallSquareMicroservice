@@ -9,18 +9,18 @@ public class Order {
     private Long id;
     private Long idClient;
     private LocalDate date;
-    private StateEnum state;
+    private StateEnum stateEnum;
     private Long idChef;
     private Restaurant restaurant;
 
     public Order() {
     }
 
-    public Order(Long id, Long idClient, LocalDate date, StateEnum state, Long idChef, Restaurant restaurant) {
+    public Order(Long id, Long idClient, LocalDate date, StateEnum stateEnum, Long idChef, Restaurant restaurant) {
         this.id = id;
         this.idClient = idClient;
         this.date = date;
-        this.state = state;
+        this.stateEnum = stateEnum;
         this.idChef = idChef;
         this.restaurant = restaurant;
     }
@@ -49,12 +49,12 @@ public class Order {
         this.date = date;
     }
 
-    public StateEnum getState() {
-        return state;
+    public StateEnum getStateEnum() {
+        return stateEnum;
     }
 
-    public void setState(StateEnum state) {
-        this.state = state;
+    public void setStateEnum(StateEnum stateEnum) {
+        this.stateEnum = stateEnum;
     }
 
     public Long getIdChef() {
@@ -72,4 +72,6 @@ public class Order {
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
     }
+
+
 }
