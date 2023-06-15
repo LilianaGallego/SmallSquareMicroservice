@@ -8,6 +8,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.resp
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.exceptions.PlateNoFromRestautantException;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
+import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.UserNotRoleAuthorized;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
@@ -66,7 +67,7 @@ class OrderUseCaseTest {
         order.setRestaurant(restaurant);
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setId(idRestaurant);
-        OrderEntity orderEntity = new OrderEntity(1L,idClient,LocalDate.now(),StateEnum.CANCELLED.getName(),10L,restaurantEntity);
+        OrderEntity orderEntity = new OrderEntity(1L,idClient,LocalDate.now(),StateEnum.CANCELLED.toString(),10L,restaurantEntity);
 
         when(restaurantPersistencePort.findById(idRestaurant)).thenReturn(restaurant);
         when(orderPersistencePort.existsByIdClient(idClient)).thenReturn(true);
@@ -100,7 +101,7 @@ class OrderUseCaseTest {
         order.setRestaurant(restaurant);
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setId(idRestaurant);
-        OrderEntity orderEntity = new OrderEntity(1L,idClient,LocalDate.now(),StateEnum.DELIVERED.getName(),10L,restaurantEntity);
+        OrderEntity orderEntity = new OrderEntity(1L,idClient,LocalDate.now(),StateEnum.DELIVERED.toString(),10L,restaurantEntity);
 
         when(restaurantPersistencePort.findById(idRestaurant)).thenReturn(restaurant);
         when(orderPersistencePort.existsByIdClient(idClient)).thenReturn(true);
@@ -124,7 +125,7 @@ class OrderUseCaseTest {
     void testValidateStatePreparation() {
         // Arrange
         OrderEntity orderBD = new OrderEntity();
-        orderBD.setStateEnum(StateEnum.PREPARATION.getName());
+        orderBD.setStateEnum(StateEnum.READY.toString());
         Order order = new Order();
         Restaurant restaurant = new Restaurant();
 
@@ -146,24 +147,17 @@ class OrderUseCaseTest {
     }
 
     @Test
-    void testGetAllOrdersByStateEnum() {
+    void testGetAllOrdersByStateEnum_RestaurantEmployeeExists_ReturnsOrders() {
         // Arrange
         StateEnum stateEnum = StateEnum.CANCELLED;
         int page = 0;
         int size = 10;
         Long idEmployee = 123L;
         Long idRestaurant = 456L;
-        OrderResponseDto orderResponseDto = new OrderResponseDto();
-        orderResponseDto.setId(10L);
-        List<OrderPlateResponseDto> orderPlates = new ArrayList<>();
-        OrderPlateResponseDto orderPlate = new OrderPlateResponseDto(10L,10);
-        orderPlates.add(orderPlate);
-        orderResponseDto.setOrderPlates(orderPlates);
         List<OrderResponseDto> expectedOrders = new ArrayList<>();
-        expectedOrders.add(orderResponseDto);
+        expectedOrders.add(new OrderResponseDto());
         expectedOrders.add(new OrderResponseDto());
         TokenInterceptor.setIdUser(idEmployee);
-
         RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee,idRestaurant);
 
         when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
@@ -174,8 +168,48 @@ class OrderUseCaseTest {
 
         // Assert
         assertEquals(expectedOrders, actualOrders);
-        verify(restaurantEmployeePersistencePort, times(1)).getRestaurantEmployeeByIdEmployee(idEmployee);
+        verify(restaurantEmployeePersistencePort, times(2)).getRestaurantEmployeeByIdEmployee(idEmployee);
         verify(orderPersistencePort, times(1)).getAllOrdersByStateEnum(stateEnum, idRestaurant, page, size);
+    }
+
+    @Test
+    void testGetAllOrdersByStateEnum_RestaurantEmployeeDoesNotExist_ThrowsUserNotRoleAuthorized() {
+        // Arrange
+        StateEnum stateEnum = StateEnum.EARNING;
+        int page = 0;
+        int size = 10;
+        Long idUser = 1L;
+        TokenInterceptor.setIdUser(idUser);
+        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idUser)).thenReturn(null);
+
+        // Act and Assert
+        assertThrows(UserNotRoleAuthorized.class, () -> orderUseCase.getAllOrdersByStateEnum(stateEnum, page, size));
+
+    }
+
+    @Test
+    void testGetAllOrdersByOrder_ReturnsOrders() {
+        // Arrange
+        Long idRestaurant = 1L;
+
+        OrderResponseDto orderResponseDto = new OrderResponseDto();
+        orderResponseDto.setId(1L);
+        List<OrderPlateResponseDto> orderResponseDtos = new ArrayList<>();
+        OrderPlateResponseDto order = new OrderPlateResponseDto(1L, 10);
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId(idRestaurant);
+        RestaurantEntity restaurantEntity = new RestaurantEntity();
+        restaurantEntity.setId(idRestaurant);
+        orderResponseDtos.add(order);
+        when(orderPersistencePort.getAllOrdersByOrder(orderResponseDto)).thenReturn(orderResponseDtos);
+
+        // Act
+        List<OrderPlateResponseDto> result = orderUseCase.getAllOrdersByOrder(orderResponseDto);
+
+        // Assert
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        verify(orderPersistencePort, times(1)).getAllOrdersByOrder(orderResponseDto);
     }
 
     @Test
