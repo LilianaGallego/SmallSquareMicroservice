@@ -5,6 +5,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exce
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderPlateResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
+import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.UserNotRoleAuthorized;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
@@ -56,9 +57,9 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void validateState(OrderEntity orderBD, Order order, Restaurant restaurant) {
-        switch (orderBD.getStateEnum()){
-            case "LISTO","PENDIENTE","PREPARACION" -> throw new OrderInProcessesException();
-            case "CANCELADO","ENTREGADO" -> {
+        switch (orderBD.getStateEnum().toString()){
+            case "READY","EARNING","PREPARATION" -> throw new OrderInProcessesException();
+            case "CANCELLED","DELIVERED" -> {
                 order.setStateEnum(StateEnum.EARNING);
                 order.setIdClient(TokenInterceptor.getIdUser());
                 order.setDate(LocalDate.now());
@@ -66,10 +67,14 @@ public class OrderUseCase implements IOrderServicePort {
                 orderPersistencePort.saveOrder(order);
             }
         }
+
     }
     @Override
     public List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
 
+        if ( restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(TokenInterceptor.getIdUser())==null){
+            throw new UserNotRoleAuthorized();
+        }
         RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(TokenInterceptor.getIdUser());
         Long idRestaurant = restaurantEmployee.getIdRestaurant();
         return orderPersistencePort.getAllOrdersByStateEnum(stateEnum, idRestaurant,page, size);
