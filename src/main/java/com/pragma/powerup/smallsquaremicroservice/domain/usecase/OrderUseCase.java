@@ -134,7 +134,8 @@ public class OrderUseCase implements IOrderServicePort {
     }
     @Override
     public void validateStateOrder(OrderEntity order, StateEnum stateEnum){
-        if(order.getStateEnum().equals(StateEnum.PREPARATION.name())){
+
+        if(order.getStateEnum().equals(StateEnum.PREPARATION.toString())){
             order.setStateEnum(stateEnum.name());
             orderPersistencePort.updateOrderReady(order);
             sendMessageOrderReady(order);
