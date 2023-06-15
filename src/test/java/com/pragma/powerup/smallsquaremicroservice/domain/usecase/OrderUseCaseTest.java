@@ -13,6 +13,7 @@ import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmplo
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.IMessangerServicePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
@@ -42,10 +43,13 @@ class OrderUseCaseTest {
 
     @Mock
     private IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
+
+    @Mock
+    private IMessangerServicePersistencePort messengerServicePersistencePort;
     private IOrderServicePort orderUseCase;
     @BeforeEach
     void setUp() {
-        orderUseCase = new OrderUseCase(orderPersistencePort, restaurantPersistencePort, restaurantEmployeePersistencePort);
+        orderUseCase = new OrderUseCase(orderPersistencePort, restaurantPersistencePort, restaurantEmployeePersistencePort, messengerServicePersistencePort);
     }
 
     @Test
@@ -274,5 +278,53 @@ class OrderUseCaseTest {
         assertThrows(PlateNoFromRestautantException.class, () -> orderUseCase.validateRestaurant(orderEntity, idEmployee));
         assertNull(orderEntity.getIdChef());
         verify(restaurantEmployeePersistencePort, times(1)).getRestaurantEmployeeByIdEmployee(idEmployee);
+    }
+
+    @Test
+    void testUpdateOrderReady_ExistingOrder_Success() {
+        // Arrange
+        Long idOrder = 1L;
+        StateEnum stateEnum = StateEnum.PREPARATION;
+        Long idEmployee = 1L;
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setId(idOrder);
+        orderEntity.setStateEnum(stateEnum.toString());
+        RestaurantEntity restaurantEntity = new RestaurantEntity();
+        restaurantEntity.setId(3L);
+        orderEntity.setRestaurantEntity(restaurantEntity);
+        RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee,3L);
+        TokenInterceptor.setIdUser(idEmployee);
+
+        when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
+        when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
+        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
+
+        // Act
+        orderUseCase.validateStateOrder(orderEntity,stateEnum);
+        assertDoesNotThrow(() -> orderUseCase.updateOrderReady(idOrder, stateEnum));
+
+
+        // Assert
+        verify(orderPersistencePort, times(1)).existsById(idOrder);
+        verify(orderPersistencePort, times(1)).findById(idOrder);
+        verify(messengerServicePersistencePort, times(2)).sendMessageOrderReady(anyString());
+    }
+
+    @Test
+    void testUpdateOrderReady_NonExistingOrder_ExceptionThrown() {
+        // Arrange
+        Long idOrder = 1L;
+        StateEnum stateEnum = StateEnum.READY;
+        int page = 0;
+        int size = 10;
+
+        when(orderPersistencePort.existsById(idOrder)).thenReturn(false);
+
+        // Act and Assert
+        assertThrows(NoDataFoundException.class, () -> orderUseCase.updateOrderReady(idOrder, stateEnum));
+        verify(orderPersistencePort, times(1)).existsById(idOrder);
+        verify(orderPersistencePort, never()).findById(anyLong());
+        verify(restaurantEmployeePersistencePort, never()).getRestaurantEmployeeByIdEmployee(anyLong());
+        verify(orderPersistencePort, never()).updateStatusOrder(any(), any(), anyLong(), anyInt(), anyInt());
     }
 }
