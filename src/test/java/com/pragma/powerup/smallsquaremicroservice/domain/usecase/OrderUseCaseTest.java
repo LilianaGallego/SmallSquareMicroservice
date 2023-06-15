@@ -67,7 +67,7 @@ class OrderUseCaseTest {
         order.setRestaurant(restaurant);
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setId(idRestaurant);
-        OrderEntity orderEntity = new OrderEntity(1L,idClient,LocalDate.now(),StateEnum.CANCELLED.toString(),10L,restaurantEntity);
+        OrderEntity orderEntity = new OrderEntity(1L,idClient,LocalDate.now(),StateEnum.CANCELLED.toString(),10L,restaurantEntity,10);
 
         when(restaurantPersistencePort.findById(idRestaurant)).thenReturn(restaurant);
         when(orderPersistencePort.existsByIdClient(idClient)).thenReturn(true);
@@ -101,7 +101,7 @@ class OrderUseCaseTest {
         order.setRestaurant(restaurant);
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setId(idRestaurant);
-        OrderEntity orderEntity = new OrderEntity(1L,idClient,LocalDate.now(),StateEnum.DELIVERED.toString(),10L,restaurantEntity);
+        OrderEntity orderEntity = new OrderEntity(1L,idClient,LocalDate.now(),StateEnum.DELIVERED.toString(),10L,restaurantEntity, 10);
 
         when(restaurantPersistencePort.findById(idRestaurant)).thenReturn(restaurant);
         when(orderPersistencePort.existsByIdClient(idClient)).thenReturn(true);

@@ -19,7 +19,6 @@ import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePo
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
-import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,13 +30,6 @@ public class OrderUseCase implements IOrderServicePort {
     private final IRestaurantPersistencePort  restaurantPersistencePort;
     private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
     private final IMessangerServicePersistencePort messengerServicePersistencePort;
-    @Setter
-    private static int code;
-    public static int getCode() {
-        return code;
-    }
-
-
 
     public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IMessangerServicePersistencePort messengerServicePersistencePort) {
         this.orderPersistencePort = orderPersistencePort;
@@ -144,13 +136,15 @@ public class OrderUseCase implements IOrderServicePort {
             throw new NotStatusInProcess();
         }
         order.setStateEnum(stateEnum.name());
+        int code = generateCode();
+        order.setCode(code);
         orderPersistencePort.updateOrderReady(order);
-        sendMessageOrderReady(order);
+        sendMessageOrderReady(order, code);
     }
 
     @Override
-    public void sendMessageOrderReady(OrderEntity order) {
-        code = generateCode();
+    public void sendMessageOrderReady(OrderEntity order, int code) {
+
         String message= "Estimado cliente su pedido con id: " + order.getId()+ ".\nYa esta listo para reclamar con el siguiente codigo: " + code;
         messengerServicePersistencePort.sendMessageOrderReady(message);
 
