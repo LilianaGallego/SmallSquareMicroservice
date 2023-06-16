@@ -54,8 +54,8 @@ public class OrderHandlerImpl implements IOrderHandler {
     }
 
     @Override
-    public void updateOrderReady(Long idOrder, StateEnum stateEnum) {
-        orderServicePort.updateOrderReady(idOrder, stateEnum);
+    public void updateOrderReady(Long idOrder) {
+        orderServicePort.updateOrderReady(idOrder);
     }
 
 }

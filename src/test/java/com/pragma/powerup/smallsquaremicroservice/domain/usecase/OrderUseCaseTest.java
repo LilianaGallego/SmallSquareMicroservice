@@ -319,16 +319,15 @@ class OrderUseCaseTest {
     void testUpdateOrderReady_ExistingOrder_Success() {
         // Arrange
         Long idOrder = 1L;
-        StateEnum stateEnum = StateEnum.PREPARATION;
         Long idEmployee = 1L;
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setId(idOrder);
-        orderEntity.setStateEnum(stateEnum.toString());
+        orderEntity.setStateEnum("PREPARATION");
         orderEntity.setIdClient(1L);
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setId(3L);
         orderEntity.setRestaurantEntity(restaurantEntity);
-        RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee,3L);
+        RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee, 3L);
         TokenInterceptor.setIdUser(idEmployee);
         User user = new User();
         user.setId(1L);
@@ -339,16 +338,15 @@ class OrderUseCaseTest {
         when(userHttpPersistencePort.getClient(orderEntity.getIdClient())).thenReturn(user);
 
         // Act
-        orderUseCase.validateStateOrder(orderEntity,stateEnum);
-        assertDoesNotThrow(() -> orderUseCase.validatePhoneClient(orderEntity, stateEnum));
-        assertDoesNotThrow(() -> orderUseCase.updateOrderReady(idOrder, stateEnum));
-
+        assertDoesNotThrow(() -> orderUseCase.updateOrderReady(orderEntity.getId()));
+        assertDoesNotThrow(() -> orderUseCase.validatePhoneClient(orderEntity));
 
         // Assert
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, times(1)).findById(idOrder);
-        verify(userHttpPersistencePort, times(3)).getClient(user.getId());
-        verify(messengerServicePersistencePort, times(3)).sendMessageOrderReady(anyString());
+        verify(userHttpPersistencePort, times(2)).getClient(orderEntity.getIdClient());
+        verify(orderPersistencePort,times(2)).updateOrderReady(orderEntity);
+
     }
 
     @Test
@@ -360,7 +358,7 @@ class OrderUseCaseTest {
         when(orderPersistencePort.existsById(idOrder)).thenReturn(false);
 
         // Act and Assert
-        assertThrows(NoDataFoundException.class, () -> orderUseCase.updateOrderReady(idOrder, stateEnum));
+        assertThrows(NoDataFoundException.class, () -> orderUseCase.updateOrderReady(idOrder));
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, never()).findById(anyLong());
         verify(restaurantEmployeePersistencePort, never()).getRestaurantEmployeeByIdEmployee(anyLong());

@@ -121,35 +121,35 @@ public class OrderUseCase implements IOrderServicePort {
 
 
     @Override
-    public void updateOrderReady(Long idOrder,StateEnum stateEnum) {
+    public void updateOrderReady(Long idOrder) {
         if(!orderPersistencePort.existsById(idOrder)){
             throw new NoDataFoundException();
         }
         Optional<OrderEntity> order = orderPersistencePort.findById(idOrder);
         Long idEmployee = TokenInterceptor.getIdUser();
         validateRestaurant(order.get(),idEmployee);
-        validateStateOrder(order.get(),stateEnum);
+        validateStateOrder(order.get());
 
 
     }
 
     @Override
-    public void validateStateOrder(OrderEntity order, StateEnum stateEnum){
+    public void validateStateOrder(OrderEntity order){
 
         if(!order.getStateEnum().equals(StateEnum.PREPARATION.toString())){
             throw new NotStatusInProcess();
         }
-        validatePhoneClient(order,stateEnum);
+        validatePhoneClient(order);
 
     }
 
     @Override
-    public void validatePhoneClient(OrderEntity order, StateEnum stateEnum) {
+    public void validatePhoneClient(OrderEntity order) {
         User user = userHttpPersistencePort.getClient(order.getIdClient());
         if(!user.getPhone().equals(phone)){
             throw new PhoneClientInvalidException();
         }
-        order.setStateEnum(stateEnum.name());
+        order.setStateEnum(StateEnum.READY.toString());
         int code = generateCode();
         order.setCode(code);
         orderPersistencePort.updateOrderReady(order);

@@ -15,16 +15,16 @@ public interface IOrderServicePort {
     void saveOrderPlate(OrderPlate orderPlate);
     void validateState(OrderEntity orderBD, Order order, Restaurant restaurant);
     void validateRestaurant(OrderEntity orderBD, Long idEmployee);
-    void validatePhoneClient(OrderEntity order, StateEnum stateEnum);
+    void validatePhoneClient(OrderEntity order);
     List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size);
 
     List<OrderPlateResponseDto> getAllOrdersByOrder(OrderResponseDto order);
     List<OrderResponseDto> updateStatusOrder(Long idOrder, StateEnum stateEnum, int page, int size);
 
-    void updateOrderReady(Long idOrder, StateEnum stateEnum);
+    void updateOrderReady(Long idOrder);
     void sendMessageOrderReady(OrderEntity order, int code);
     int generateCode();
 
-    void validateStateOrder(OrderEntity order, StateEnum stateEnum);
+    void validateStateOrder(OrderEntity order);
 
 }

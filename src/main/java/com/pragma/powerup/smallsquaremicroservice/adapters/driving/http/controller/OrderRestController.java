@@ -74,8 +74,8 @@ public class OrderRestController {
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
             })
     @PatchMapping("/order/ready/{idOrder}")
-    public ResponseEntity<Map<String, String>> updateOrderReady( @PathVariable Long idOrder, @RequestParam StateEnum stateEnum) {
-        orderHandler.updateOrderReady(idOrder, stateEnum);
+    public ResponseEntity<Map<String, String>> updateOrderReady( @PathVariable Long idOrder) {
+        orderHandler.updateOrderReady(idOrder);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.ORDER_STATE_READY_MESSAGE));
     }
