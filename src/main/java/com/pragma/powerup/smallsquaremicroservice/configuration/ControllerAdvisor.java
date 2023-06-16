@@ -136,4 +136,11 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, ORDER_STATE_NOT_VALID_MESSAGE));
     }
+
+    @ExceptionHandler(PhoneClientInvalidException.class)
+    public ResponseEntity<Map<String, String>> handlePhoneClientInvalidException(
+            PhoneClientInvalidException phoneClientInvalidException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, PHONE_CLIENT_INVALID_MESSAGE));
+    }
 }

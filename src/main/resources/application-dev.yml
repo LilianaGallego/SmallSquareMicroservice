@@ -27,3 +27,4 @@ my:
     employee: "http://localhost:8080/user/employee/createEmployee"
     getEmployee: "http://localhost:8080/user/employee/getEmployeeByDni/"
     message: "http://localhost:9080/messengerservice"
+    getClient: "http://localhost:8080/user/client/byId/"

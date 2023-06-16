@@ -5,7 +5,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mapp
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.*;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.EmployeeHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.MessangerServiceHttpAdapter;
-import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.OwnerHttpAdapter;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.UserHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderPlateResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.ICategoryServicePort;
@@ -49,7 +49,7 @@ public class BeanConfiguration {
 
     @Bean
     public IRestaurantServicePort restaurantServicePort() {
-        return new RestaurantUseCase(restaurantPersistencePort(), restaurantEmployeePersistencePort(), employeePersistencePort(), restaurantRepository, ownerPersistencePort());
+        return new RestaurantUseCase(restaurantPersistencePort(), restaurantEmployeePersistencePort(), employeePersistencePort(), restaurantRepository, userHttpPersistencePort());
     }
     @Bean
     public IRestaurantPersistencePort restaurantPersistencePort() {
@@ -61,7 +61,7 @@ public class BeanConfiguration {
         return new EmployeeHttpAdapter();
     }
     @Bean
-    public IOwnerHttpPersistencePort ownerPersistencePort() {return new OwnerHttpAdapter();}
+    public IUserHttpPersistencePort userHttpPersistencePort() {return new UserHttpAdapter();}
 
 
     @Bean
@@ -104,6 +104,6 @@ public class BeanConfiguration {
 
     @Bean
     public IOrderServicePort orderServicePort() {
-        return new OrderUseCase(orderPersistencePort(),restaurantPersistencePort(), restaurantEmployeePersistencePort(), messengerServicePersistencePort());
+        return new OrderUseCase(orderPersistencePort(),restaurantPersistencePort(), restaurantEmployeePersistencePort(), messengerServicePersistencePort(), userHttpPersistencePort());
     }
 }

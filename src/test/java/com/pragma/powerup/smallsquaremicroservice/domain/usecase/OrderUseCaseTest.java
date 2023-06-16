@@ -11,13 +11,11 @@ import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenIn
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.UserNotRoleAuthorized;
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
+import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IMessangerServicePersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantEmployeePersistencePort;
-import com.pragma.powerup.smallsquaremicroservice.domain.spi.IRestaurantPersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.*;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,10 +45,13 @@ class OrderUseCaseTest {
 
     @Mock
     private IMessangerServicePersistencePort messengerServicePersistencePort;
+
+    @Mock
+    private IUserHttpPersistencePort userHttpPersistencePort;
     private IOrderServicePort orderUseCase;
     @BeforeEach
     void setUp() {
-        orderUseCase = new OrderUseCase(orderPersistencePort, restaurantPersistencePort, restaurantEmployeePersistencePort, messengerServicePersistencePort);
+        orderUseCase = new OrderUseCase(orderPersistencePort, restaurantPersistencePort, restaurantEmployeePersistencePort, messengerServicePersistencePort, userHttpPersistencePort);
     }
 
     @Test
@@ -323,32 +324,38 @@ class OrderUseCaseTest {
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setId(idOrder);
         orderEntity.setStateEnum(stateEnum.toString());
+        orderEntity.setIdClient(1L);
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setId(3L);
         orderEntity.setRestaurantEntity(restaurantEntity);
         RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee,3L);
         TokenInterceptor.setIdUser(idEmployee);
-
+        User user = new User();
+        user.setId(1L);
+        user.setPhone("+573118688145");
         when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
         when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
         when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
+        when(userHttpPersistencePort.getClient(orderEntity.getIdClient())).thenReturn(user);
 
         // Act
         orderUseCase.validateStateOrder(orderEntity,stateEnum);
+        assertDoesNotThrow(() -> orderUseCase.validatePhoneClient(orderEntity, stateEnum));
         assertDoesNotThrow(() -> orderUseCase.updateOrderReady(idOrder, stateEnum));
 
 
         // Assert
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, times(1)).findById(idOrder);
-        verify(messengerServicePersistencePort, times(2)).sendMessageOrderReady(anyString());
+        verify(userHttpPersistencePort, times(3)).getClient(user.getId());
+        verify(messengerServicePersistencePort, times(3)).sendMessageOrderReady(anyString());
     }
 
     @Test
     void testUpdateOrderReady_NonExistingOrder_ExceptionThrown() {
         // Arrange
         Long idOrder = 1L;
-        StateEnum stateEnum = StateEnum.READY;;
+        StateEnum stateEnum = StateEnum.READY;
 
         when(orderPersistencePort.existsById(idOrder)).thenReturn(false);
 

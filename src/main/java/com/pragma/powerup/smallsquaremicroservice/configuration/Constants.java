@@ -19,6 +19,8 @@ public class Constants {
 
     public static final String ORDER_STATE_NOT_VALID_MESSAGE = "The status of the order is not in process";
     public static final String PLATE_UPDATED_MESSAGE = "Plate updated successfully";
+    public static final String PHONE_CLIENT_INVALID_MESSAGE = "The customer's cell phone number must be +573118688145 " +
+            "to be able to send the notification of change of order status";
     public static final String RESPONSE_ERROR_MESSAGE_KEY = "error";
     public static final String RESPONSE_ERROR_MESSAGE_TOKEN= "A problem with the token has occurred";
     public static final String USER_NOT_FOUND_MESSAGE = "No user found with the role provided";
