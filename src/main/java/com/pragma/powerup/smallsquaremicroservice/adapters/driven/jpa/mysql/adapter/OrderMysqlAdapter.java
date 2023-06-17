@@ -112,7 +112,7 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
     }
 
     @Override
-    public void updateOrderReady(OrderEntity order) {
+    public void updateOrder(OrderEntity order) {
         orderRepository.save(order);
     }
 

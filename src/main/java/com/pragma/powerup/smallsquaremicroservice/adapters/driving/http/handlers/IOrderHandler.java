@@ -12,4 +12,5 @@ public interface IOrderHandler {
     List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size);
     List<OrderResponseDto> updateStatusOrder(Long idOrder,StateEnum stateEnum, int page, int size);
     void updateOrderReady(Long idOrder);
+    void updateOrderDelivered(Long idOrder,int codeClient);
 }

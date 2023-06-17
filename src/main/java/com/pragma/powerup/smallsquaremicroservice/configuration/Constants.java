@@ -15,7 +15,7 @@ public class Constants {
 
     public static final String PLATE_CREATED_MESSAGE = "Plate created successfully";
     public static final String ORDER_CREATED_MESSAGE = "Order created successfully";
-    public static final String ORDER_STATE_READY_MESSAGE = "Order state is ready to be processed";
+    public static final String ORDER_STATE_READY_MESSAGE = "Order state updated";
 
     public static final String ORDER_STATE_NOT_VALID_MESSAGE = "The status of the order is not in process";
     public static final String PLATE_UPDATED_MESSAGE = "Plate updated successfully";
@@ -26,6 +26,8 @@ public class Constants {
     public static final String USER_NOT_FOUND_MESSAGE = "No user found with the role provided";
     public static final String NO_DATA_FOUND_MESSAGE = "No data found for the requested petition";
     public static final String NAME_REQUIRED_MESSAGE = "Name is required";
+
+    public static final String INCORRECT_CODE_MESSAGE = "The code entered does not correspond to the customer's order";
     public static final String ADDRESS_REQUIRED_MESSAGE = "Address is required";
     public static final String PHONE_REQUIRED_MESSAGE = "Phone is required";
     public static final String URL_LOGO_REQUIRED_MESSAGE = "UrlLogo is required";

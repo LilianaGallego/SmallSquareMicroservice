@@ -55,7 +55,13 @@ public class OrderHandlerImpl implements IOrderHandler {
 
     @Override
     public void updateOrderReady(Long idOrder) {
-        orderServicePort.updateOrderReady(idOrder);
+        int codeClient = 0;
+        orderServicePort.updateOrder(idOrder, codeClient);
+    }
+
+    @Override
+    public void updateOrderDelivered(Long idOrder, int codeClient) {
+        orderServicePort.updateOrder(idOrder, codeClient);
     }
 
 }

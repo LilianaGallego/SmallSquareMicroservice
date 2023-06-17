@@ -12,6 +12,9 @@ import com.pragma.powerup.smallsquaremicroservice.configuration.security.excepti
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
+import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.IncorrectCodeException;
+import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.NotStatusInProcess;
+import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.PhoneClientInvalidException;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
@@ -316,13 +319,15 @@ class OrderUseCaseTest {
     }
 
     @Test
-    void testUpdateOrderReady_ExistingOrder_Success() {
+    void testUpdateOrder_ExistingOrder_Preparation_Success() {
         // Arrange
         Long idOrder = 1L;
+        int codeClient = 1234;
         Long idEmployee = 1L;
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setId(idOrder);
-        orderEntity.setStateEnum("PREPARATION");
+        orderEntity.setStateEnum(StateEnum.PREPARATION.toString());
+        orderEntity.setCode(codeClient);
         orderEntity.setIdClient(1L);
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setId(3L);
@@ -338,16 +343,61 @@ class OrderUseCaseTest {
         when(userHttpPersistencePort.getClient(orderEntity.getIdClient())).thenReturn(user);
 
         // Act
-        assertDoesNotThrow(() -> orderUseCase.updateOrderReady(orderEntity.getId()));
-        assertDoesNotThrow(() -> orderUseCase.validatePhoneClient(orderEntity));
+        assertDoesNotThrow(() -> orderUseCase.updateOrder(idOrder, codeClient));
 
         // Assert
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, times(1)).findById(idOrder);
-        verify(userHttpPersistencePort, times(2)).getClient(orderEntity.getIdClient());
-        verify(orderPersistencePort,times(2)).updateOrderReady(orderEntity);
+        verify(restaurantEmployeePersistencePort, times(1)).getRestaurantEmployeeByIdEmployee(idEmployee);
+        verify(userHttpPersistencePort, times(1)).getClient(user.getId());
+        verify(orderPersistencePort, times(1)).updateOrder(orderEntity);
+        verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
+
+        assertEquals(StateEnum.READY.toString(), orderEntity.getStateEnum());
 
     }
+
+    @Test
+    void testUpdateOrder_ExistingOrder_Ready_Success() {
+        // Arrange
+        Long idOrder = 1L;
+        int codeClient = 1234;
+        Long idEmployee = 1L;
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setId(idOrder);
+        orderEntity.setStateEnum(StateEnum.READY.toString());
+        orderEntity.setCode(codeClient);
+        orderEntity.setIdClient(1L);
+        RestaurantEntity restaurantEntity = new RestaurantEntity();
+        restaurantEntity.setId(3L);
+        orderEntity.setRestaurantEntity(restaurantEntity);
+        RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee, 3L);
+        TokenInterceptor.setIdUser(idEmployee);
+        User user = new User();
+        user.setId(1L);
+        user.setPhone("+573118688145");
+        when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
+        when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
+        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
+        when(userHttpPersistencePort.getClient(orderEntity.getIdClient())).thenReturn(user);
+
+        // Act
+        assertDoesNotThrow(() -> orderUseCase.updateOrder(idOrder, codeClient));
+
+        // Assert
+        verify(orderPersistencePort, times(1)).existsById(idOrder);
+        verify(orderPersistencePort, times(1)).findById(idOrder);
+        verify(restaurantEmployeePersistencePort, times(1)).getRestaurantEmployeeByIdEmployee(idEmployee);
+        verify(userHttpPersistencePort, times(1)).getClient(user.getId());
+        verify(orderPersistencePort, times(1)).updateOrder(orderEntity);
+        verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
+        assertEquals(StateEnum.DELIVERED.toString(), orderEntity.getStateEnum());
+
+        verify(orderPersistencePort, times(1)).updateOrder(orderEntity);
+        verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
+    }
+
+
 
     @Test
     void testUpdateOrderReady_NonExistingOrder_ExceptionThrown() {
@@ -358,10 +408,90 @@ class OrderUseCaseTest {
         when(orderPersistencePort.existsById(idOrder)).thenReturn(false);
 
         // Act and Assert
-        assertThrows(NoDataFoundException.class, () -> orderUseCase.updateOrderReady(idOrder));
+        assertThrows(NoDataFoundException.class, () -> orderUseCase.updateOrder(idOrder, 10));
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, never()).findById(anyLong());
         verify(restaurantEmployeePersistencePort, never()).getRestaurantEmployeeByIdEmployee(anyLong());
         verify(orderPersistencePort, never()).updateStatusOrder(any(), any(), anyLong(), anyInt(), anyInt());
+    }
+
+    @Test
+    void testUpdateOrder_ExistingOrder_NotInProcess_ThrowsException() {
+        // Arrange
+        Long idOrder = 1L;
+        int codeClient = 1234;
+        Long idEmployee = 1L;
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setId(idOrder);
+        orderEntity.setStateEnum(StateEnum.DELIVERED.toString());
+        RestaurantEntity restaurantEntity = new RestaurantEntity();
+        restaurantEntity.setId(3L);
+        orderEntity.setRestaurantEntity(restaurantEntity);
+        RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee, 3L);
+        TokenInterceptor.setIdUser(idEmployee);
+        User user = new User();
+        user.setId(1L);
+        user.setPhone("+573118688145");
+        when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
+        when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
+        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
+
+
+        // Act & Assert
+        assertThrows(NotStatusInProcess.class, () -> orderUseCase.updateOrder(idOrder, codeClient));
+    }
+
+    @Test
+    void testUpdateOrder_ExistingOrder_InvalidPhone_ThrowsException() {
+        // Arrange
+        Long idOrder = 1L;
+        int codeClient = 1234;
+        String phone= "9292929292";
+        Long idEmployee = 1L;
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setId(idOrder);
+        orderEntity.setStateEnum(StateEnum.PREPARATION.toString());
+        RestaurantEntity restaurantEntity = new RestaurantEntity();
+        restaurantEntity.setId(3L);
+        orderEntity.setRestaurantEntity(restaurantEntity);
+        RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee, 3L);
+        TokenInterceptor.setIdUser(idEmployee);
+        User user = new User();
+        user.setId(1L);
+        orderEntity.setIdClient(user.getId());
+        user.setPhone("3119879489");
+        when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
+        when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
+        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
+        when(userHttpPersistencePort.getClient(orderEntity.getIdClient())).thenReturn(user);
+
+
+        // Act & Assert
+        assertNotEquals(user.getPhone(),phone);
+        assertThrows(PhoneClientInvalidException.class, () -> orderUseCase.updateOrder(idOrder, codeClient));
+    }
+
+    @Test
+    void testUpdateOrder_ExistingOrder_IncorrectCode_ThrowsException() {
+        // Arrange
+        Long idOrder = 1L;
+        int codeClient = 1234;
+        Long idEmployee = 1L;
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setId(idOrder);
+        orderEntity.setStateEnum(StateEnum.READY.toString());
+        RestaurantEntity restaurantEntity = new RestaurantEntity();
+        restaurantEntity.setId(3L);
+        orderEntity.setRestaurantEntity(restaurantEntity);
+        RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee, 3L);
+        TokenInterceptor.setIdUser(idEmployee);
+        User user = new User();
+        user.setId(1L);
+        user.setPhone("+573118688145");
+        orderEntity.setCode(codeClient + 1); // Set an incorrect code
+
+        // Act & Assert
+        assertNotEquals(orderEntity.getCode(),codeClient);
+        assertThrows(IncorrectCodeException.class, () -> orderUseCase.validateCodeClient(orderEntity, codeClient));
     }
 }

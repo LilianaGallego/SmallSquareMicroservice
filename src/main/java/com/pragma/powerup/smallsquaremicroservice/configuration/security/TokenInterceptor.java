@@ -89,6 +89,14 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        if (EMPLOYEE.equals(roleUser) && isEmployeeUpdateOrder(request.getRequestURI())) {
+            return true;
+        }
+
+        if (EMPLOYEE.equals(roleUser) && isEmployeeUpdateOrderDelivered(request.getRequestURI())) {
+            return true;
+        }
+
         throw new UserNotRoleAuthorized();
     }
 
@@ -137,6 +145,10 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     }
 
+    private boolean isEmployeeUpdateOrderDelivered(String requestURI) {
+        return requestURI.contains("/smallsquare/order/delivered/");
+
+    }
 
 }
 
