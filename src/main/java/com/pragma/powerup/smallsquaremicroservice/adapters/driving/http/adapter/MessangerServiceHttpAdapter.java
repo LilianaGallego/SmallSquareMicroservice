@@ -17,8 +17,19 @@ public class MessangerServiceHttpAdapter  implements IMessangerServicePersistenc
     String url;
 
     @Override
-    public void sendMessageOrderReady(String message) {
-        String urlMessage = url+"/send/message";
+    public void sendMessageStateOrderUpdated(String message) {
+        String urlMessage = url+"/message";
+        sendMessageState(message,urlMessage);
+    }
+
+    @Override
+    public void sendMessageStateOrderDelivered(String message) {
+        String urlMessage = url+"/delivered";
+        sendMessageState(message,urlMessage);
+    }
+
+    @Override
+    public void sendMessageState(String message, String urlMessage) {
         String token = TokenInterceptor.getAuthorizationToken();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", token);

@@ -11,6 +11,7 @@ import com.pragma.powerup.smallsquaremicroservice.configuration.security.excepti
 import com.pragma.powerup.smallsquaremicroservice.domain.api.IOrderServicePort;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmployee;
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
+import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.IncorrectCodeException;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.NotStatusInProcess;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.PhoneClientInvalidException;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
@@ -63,7 +64,7 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void validateState(OrderEntity orderBD, Order order, Restaurant restaurant) {
-        switch (orderBD.getStateEnum().toString()){
+        switch (orderBD.getStateEnum()){
             case "READY","EARNING","PREPARATION" -> throw new OrderInProcessesException();
             case "CANCELLED","DELIVERED" -> {
                 order.setStateEnum(StateEnum.EARNING);
@@ -121,46 +122,82 @@ public class OrderUseCase implements IOrderServicePort {
 
 
     @Override
-    public void updateOrderReady(Long idOrder) {
+    public void updateOrder(Long idOrder, int codeClient) {
         if(!orderPersistencePort.existsById(idOrder)){
             throw new NoDataFoundException();
         }
         Optional<OrderEntity> order = orderPersistencePort.findById(idOrder);
         Long idEmployee = TokenInterceptor.getIdUser();
         validateRestaurant(order.get(),idEmployee);
-        validateStateOrder(order.get());
-
+        validateStateOrder(order.get(), codeClient);
 
     }
 
     @Override
-    public void validateStateOrder(OrderEntity order){
+    public void validateStateOrder(OrderEntity order, int codeClient) {
 
-        if(!order.getStateEnum().equals(StateEnum.PREPARATION.toString())){
-            throw new NotStatusInProcess();
+        switch (order.getStateEnum()) {
+            case "PREPARATION", "READY" ->
+                validatePhoneClient(order, codeClient);
+
+            default ->
+                throw new NotStatusInProcess();
+
         }
-        validatePhoneClient(order);
 
     }
 
     @Override
-    public void validatePhoneClient(OrderEntity order) {
+    public void validatePhoneClient(OrderEntity order, int codeClient) {
         User user = userHttpPersistencePort.getClient(order.getIdClient());
         if(!user.getPhone().equals(phone)){
             throw new PhoneClientInvalidException();
         }
-        order.setStateEnum(StateEnum.READY.toString());
-        int code = generateCode();
-        order.setCode(code);
-        orderPersistencePort.updateOrderReady(order);
-        sendMessageOrderReady(order, code);
+        switch (order.getStateEnum()){
+            case "PREPARATION" -> {
+                order.setStateEnum(StateEnum.READY.toString());
+                int code = generateCode();
+                order.setCode(code);
+                orderPersistencePort.updateOrder(order);
+                sendMessageOrderReady(order, code);
+            }
+
+            case "READY"-> {
+                order.setStateEnum(StateEnum.DELIVERED.toString());
+                validateCodeClient(order,codeClient);
+            }
+        }
+
+
+    }
+
+    @Override
+    public void validateCodeClient(OrderEntity order, int codeClient) {
+        if(order.getCode() != codeClient){
+            throw  new IncorrectCodeException();
+        }
+
+        orderPersistencePort.updateOrder(order);
+        sendMessageOrderReady(order, codeClient);
+
     }
 
     @Override
     public void sendMessageOrderReady(OrderEntity order, int code) {
+        String message;
+        switch (order.getStateEnum()){
+            case "READY"->{
+                message= "Estimado cliente su pedido con id: " + order.getId()+ "." +
+                    "\nYa esta listo para reclamar con el siguiente codigo: " + code;
+                messengerServicePersistencePort.sendMessageStateOrderUpdated(message);}
 
-        String message= "Estimado cliente su pedido con id: " + order.getId()+ ".\nYa esta listo para reclamar con el siguiente codigo: " + code;
-        messengerServicePersistencePort.sendMessageOrderReady(message);
+
+            case "DELIVERED"-> {
+                message = "Estimado cliente su pedido con id: " + order.getId() + "." +
+                        "\nSe entrego con exito";
+                messengerServicePersistencePort.sendMessageStateOrderDelivered(message);}
+            default -> throw  new NotStatusInProcess();
+        }
 
     }
     @Override

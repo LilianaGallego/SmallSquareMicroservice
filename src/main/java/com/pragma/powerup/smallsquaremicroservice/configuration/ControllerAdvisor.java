@@ -143,4 +143,11 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, PHONE_CLIENT_INVALID_MESSAGE));
     }
+
+    @ExceptionHandler(IncorrectCodeException.class)
+    public ResponseEntity<Map<String, String>> handleIncorrectCodeException(
+            IncorrectCodeException incorrectCodeException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, INCORRECT_CODE_MESSAGE));
+    }
 }

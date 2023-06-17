@@ -26,5 +26,5 @@ my:
     url: "http://localhost:8080/user/owner/getOwnerById/"
     employee: "http://localhost:8080/user/employee/createEmployee"
     getEmployee: "http://localhost:8080/user/employee/getEmployeeByDni/"
-    message: "http://localhost:9080/messengerservice"
+    message: "http://localhost:9080/messengerservice/send"
     getClient: "http://localhost:8080/user/client/byId/"

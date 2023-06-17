@@ -1,5 +1,7 @@
 package com.pragma.powerup.smallsquaremicroservice.domain.spi;
 
 public interface IMessangerServicePersistencePort {
-    void sendMessageOrderReady(String message);
+    void sendMessageStateOrderUpdated(String message);
+    void sendMessageStateOrderDelivered(String message);
+    void sendMessageState(String message, String urlMessage);
 }

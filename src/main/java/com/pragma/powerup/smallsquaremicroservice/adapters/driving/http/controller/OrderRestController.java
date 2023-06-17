@@ -79,4 +79,18 @@ public class OrderRestController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.ORDER_STATE_READY_MESSAGE));
     }
+
+    @Operation(summary = "Updated state order",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Updated order",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
+                    @ApiResponse(responseCode = "409", description = "Order no exists",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+            })
+    @PatchMapping("/order/delivered/{idOrder}/{codeClient}")
+    public ResponseEntity<Map<String, String>> updateOrderDelivered( @PathVariable Long idOrder, @PathVariable int codeClient) {
+        orderHandler.updateOrderDelivered(idOrder, codeClient);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.ORDER_STATE_READY_MESSAGE));
+    }
 }
