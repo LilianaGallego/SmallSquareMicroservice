@@ -195,7 +195,7 @@ public class OrderUseCase implements IOrderServicePort {
             case "DELIVERED"-> {
                 message = "Estimado cliente su pedido con id: " + order.getId() + "." +
                         "\nSe entrego con exito";
-                messengerServicePersistencePort.sendMessageStateOrderDelivered(message);}
+                messengerServicePersistencePort.sendMessageStateOrderUpdated(message);}
             default -> throw  new NotStatusInProcess();
         }
 
