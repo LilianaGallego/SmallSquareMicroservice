@@ -16,8 +16,9 @@ public class Constants {
     public static final String PLATE_CREATED_MESSAGE = "Plate created successfully";
     public static final String ORDER_CREATED_MESSAGE = "Order created successfully";
     public static final String ORDER_STATE_READY_MESSAGE = "Order state updated";
-
+    public static final String ORDER_STATE_CANCEL_MESSAGE = "Order canceled successfully";
     public static final String ORDER_STATE_NOT_VALID_MESSAGE = "The status of the order is not in process";
+    public static final String ORDER_NOT_CANCELL_MESSAGE = "Sorry your order is already in process and can not be canceled";
     public static final String PLATE_UPDATED_MESSAGE = "Plate updated successfully";
     public static final String PHONE_CLIENT_INVALID_MESSAGE = "The customer's cell phone number must be +573118688145 " +
             "to be able to send the notification of change of order status";

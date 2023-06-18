@@ -13,4 +13,6 @@ public interface IOrderHandler {
     List<OrderResponseDto> updateStatusOrder(Long idOrder,StateEnum stateEnum, int page, int size);
     void updateOrderReady(Long idOrder);
     void updateOrderDelivered(Long idOrder,int codeClient);
+    void cancelOrder(Long idOrder);
+
 }

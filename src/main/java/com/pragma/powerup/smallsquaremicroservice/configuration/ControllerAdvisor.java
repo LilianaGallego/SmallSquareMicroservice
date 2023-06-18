@@ -144,6 +144,13 @@ public class ControllerAdvisor {
                 .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, PHONE_CLIENT_INVALID_MESSAGE));
     }
 
+    @ExceptionHandler(OrderNotCancellException.class)
+    public ResponseEntity<Map<String, String>> handleOrderNotCancellException(
+            OrderNotCancellException orderNotCancellException) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, ORDER_NOT_CANCELL_MESSAGE));
+    }
+
     @ExceptionHandler(IncorrectCodeException.class)
     public ResponseEntity<Map<String, String>> handleIncorrectCodeException(
             IncorrectCodeException incorrectCodeException) {
