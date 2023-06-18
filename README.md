@@ -9,7 +9,7 @@
       The implementation of this microservice begins with the creation of the restaurant that a user with the role of 
 owner must have and the creation of a dish that belongs to a restaurant and that has an assigned category, update of the dish, security of the routes is added, the employee is created, the dish is enabled or disabled, 
 all the restaurants are listed with pagination and the dishes are listed by category id and restaurant id by role consumer, @Setter
-    private static Long idUser;
+    private static Long idUser, make an order, list order by state, assign order to employee, update status order, notify order state ready, update state order to delivered and cancel order
 
    </p>
 
@@ -81,7 +81,10 @@ To get a local copy up and running follow these steps:
   ![img.png](img/img12.png)
 - Notify order ready
     ![img.png](img/img13.png)
-    
+- Update state order to delivered with code client
+    ![img.png](img16.png)
+- Cancel order if state is earning
+    ![img_1.png](img15.png)
 
 
 <!-- ROADMAP -->

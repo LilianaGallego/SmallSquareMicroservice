@@ -242,8 +242,6 @@ public class OrderUseCase implements IOrderServicePort {
             }
         }
 
-
-
     }
 
 }
