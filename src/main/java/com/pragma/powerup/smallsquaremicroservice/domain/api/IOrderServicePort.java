@@ -23,9 +23,13 @@ public interface IOrderServicePort {
     List<OrderResponseDto> updateStatusOrder(Long idOrder, StateEnum stateEnum, int page, int size);
 
     void updateOrder(Long idOrder, int codeClient);
-    void sendMessageOrderReady(OrderEntity order, int code);
+    void sendMessageOrder(OrderEntity order, int code);
     int generateCode();
 
     void validateStateOrder(OrderEntity order, int codeClient);
+    void cancelOrder(Long idOrder);
+
+    void validateStateEarning(OrderEntity order);
+
 
 }

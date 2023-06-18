@@ -13,6 +13,7 @@ import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmplo
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.IncorrectCodeException;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.NotStatusInProcess;
+import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.OrderNotCancellException;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.PhoneClientInvalidException;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
@@ -159,7 +160,7 @@ public class OrderUseCase implements IOrderServicePort {
                 int code = generateCode();
                 order.setCode(code);
                 orderPersistencePort.updateOrder(order);
-                sendMessageOrderReady(order, code);
+                sendMessageOrder(order, code);
             }
 
             case "READY"-> {
@@ -178,12 +179,12 @@ public class OrderUseCase implements IOrderServicePort {
         }
 
         orderPersistencePort.updateOrder(order);
-        sendMessageOrderReady(order, codeClient);
+        sendMessageOrder(order, codeClient);
 
     }
 
     @Override
-    public void sendMessageOrderReady(OrderEntity order, int code) {
+    public void sendMessageOrder(OrderEntity order, int code) {
         String message;
         switch (order.getStateEnum()){
             case "READY"->{
@@ -196,6 +197,7 @@ public class OrderUseCase implements IOrderServicePort {
                 message = "Estimado cliente su pedido con id: " + order.getId() + "." +
                         "\nSe entrego con exito";
                 messengerServicePersistencePort.sendMessageStateOrderUpdated(message);}
+
             default -> throw  new NotStatusInProcess();
         }
 
@@ -205,6 +207,41 @@ public class OrderUseCase implements IOrderServicePort {
         return (int) (10000 + Math.random() * 90000);
     }
 
+    @Override
+    public void cancelOrder(Long idOrder) {
+        if (!orderPersistencePort.existsById(idOrder)){
+            throw new NoDataFoundException();
+        }
+        Optional<OrderEntity> order = orderPersistencePort.findById(idOrder);
+        validateStateEarning(order.get());
 
+    }
+
+    @Override
+    public void validateStateEarning(OrderEntity order) {
+        switch (order.getStateEnum()){
+            case "PREPARATION", "READY"->{
+                String message = "Lo sentimos tu pedido ya esta en proceso y no puede cancelarse";
+                messengerServicePersistencePort.sendMessageStateOrderUpdated(message);
+                throw  new OrderNotCancellException();
+            }
+            case "DELIVERED"->{
+                String message = "Lo sentimos tu pedido  ya se entrego y no puede cancelarse";
+                messengerServicePersistencePort.sendMessageStateOrderUpdated(message);
+                throw  new NotStatusInProcess();
+            }
+
+            case "CANCELLED"->{
+                String message = "Lo sentimos tu pedido  ya fue cancelado con anterioridad";
+                messengerServicePersistencePort.sendMessageStateOrderUpdated(message);
+                throw  new NotStatusInProcess();
+            }
+            case "EARNING"->{
+                order.setStateEnum(StateEnum.CANCELLED.toString());
+                orderPersistencePort.updateOrder(order);
+            }
+        }
+
+    }
 
 }

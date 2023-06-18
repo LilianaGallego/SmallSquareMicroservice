@@ -34,8 +34,6 @@ public class TokenInterceptor implements HandlerInterceptor {
         return idUser;
     }
 
-
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
         token = request.getHeader("Authorization");
@@ -74,6 +72,10 @@ public class TokenInterceptor implements HandlerInterceptor {
         }
 
         if (CONSUMER.equals(roleUser) && isClientOrder(request.getRequestURI())) {
+            return true;
+        }
+
+        if (CONSUMER.equals(roleUser) && isClientCancelOrder(request.getRequestURI())) {
             return true;
         }
 
@@ -130,6 +132,12 @@ public class TokenInterceptor implements HandlerInterceptor {
         return requestURI.startsWith("/smallsquare/order");
 
     }
+
+    private boolean isClientCancelOrder(String requestURI) {
+        return requestURI.startsWith("/smallsquare/order/cancel/");
+
+    }
+
 
     private boolean isEmployee(String requestURI) {
         return requestURI.startsWith("/smallsquare/orders/byState");

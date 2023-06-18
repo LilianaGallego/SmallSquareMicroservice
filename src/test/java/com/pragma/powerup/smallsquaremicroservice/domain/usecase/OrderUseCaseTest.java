@@ -14,6 +14,7 @@ import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.RestaurantEmplo
 import com.pragma.powerup.smallsquaremicroservice.domain.dtouser.User;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.IncorrectCodeException;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.NotStatusInProcess;
+import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.OrderNotCancellException;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.PhoneClientInvalidException;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
@@ -397,8 +398,6 @@ class OrderUseCaseTest {
         verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
     }
 
-
-
     @Test
     void testUpdateOrderReady_NonExistingOrder_ExceptionThrown() {
         // Arrange
@@ -493,5 +492,97 @@ class OrderUseCaseTest {
         // Act & Assert
         assertNotEquals(orderEntity.getCode(),codeClient);
         assertThrows(IncorrectCodeException.class, () -> orderUseCase.validateCodeClient(orderEntity, codeClient));
+    }
+
+    @Test
+    void testCancelOrder_ExistingOrder_EarningState_Success() {
+        // Arrange
+        Long idOrder = 1L;
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setId(idOrder);
+        orderEntity.setStateEnum(StateEnum.EARNING.toString());
+        when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
+        when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
+
+        // Act
+        assertDoesNotThrow(() -> orderUseCase.cancelOrder(idOrder));
+        assertDoesNotThrow(() -> messengerServicePersistencePort.sendMessageStateOrderUpdated("message"));
+
+
+        // Assert
+        verify(orderPersistencePort, times(1)).existsById(idOrder);
+        verify(orderPersistencePort, times(1)).findById(idOrder);
+        verify(orderPersistencePort, times(1)).updateOrder(orderEntity);
+        verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
+    }
+
+    @Test
+    void testCancelOrder_ExistingOrder_PreparationState_ThrowsException() {
+        // Arrange
+        Long idOrder = 1L;
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setId(idOrder);
+        orderEntity.setStateEnum(StateEnum.PREPARATION.toString());
+        when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
+        when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
+
+        // Act & Assert
+        assertThrows(OrderNotCancellException.class, () -> orderUseCase.cancelOrder(idOrder));
+        verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
+    }
+
+    @Test
+    void testCancelOrder_ExistingOrder_ReadyState_ThrowsException() {
+        // Arrange
+        Long idOrder = 1L;
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setId(idOrder);
+        orderEntity.setStateEnum(StateEnum.READY.toString());
+        when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
+        when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
+
+        // Act & Assert
+        assertThrows(OrderNotCancellException.class, () -> orderUseCase.cancelOrder(idOrder));
+        verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
+    }
+
+    @Test
+    void testCancelOrder_ExistingOrder_DeliveredState_ThrowsException() {
+        // Arrange
+        Long idOrder = 1L;
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setId(idOrder);
+        orderEntity.setStateEnum(StateEnum.DELIVERED.toString());
+        when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
+        when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
+
+        // Act & Assert
+        assertThrows(NotStatusInProcess.class, () -> orderUseCase.cancelOrder(idOrder));
+        verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
+    }
+
+    @Test
+    void testCancelOrder_ExistingOrder_CancelledState_ThrowsException() {
+        // Arrange
+        Long idOrder = 1L;
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setId(idOrder);
+        orderEntity.setStateEnum(StateEnum.CANCELLED.toString());
+        when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
+        when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
+
+        // Act & Assert
+        assertThrows(NotStatusInProcess.class, () -> orderUseCase.cancelOrder(idOrder));
+        verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
+    }
+
+    @Test
+    void testCancelOrder_NonExistingOrder_ThrowsException() {
+        // Arrange
+        Long idOrder = 1L;
+        when(orderPersistencePort.existsById(idOrder)).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(NoDataFoundException.class, () -> orderUseCase.cancelOrder(idOrder));
     }
 }

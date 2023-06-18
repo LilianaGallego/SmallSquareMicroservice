@@ -64,4 +64,9 @@ public class OrderHandlerImpl implements IOrderHandler {
         orderServicePort.updateOrder(idOrder, codeClient);
     }
 
+    @Override
+    public void cancelOrder(Long idOrder) {
+        orderServicePort.cancelOrder(idOrder);
+    }
+
 }
