@@ -82,6 +82,10 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        if (CONSUMER.equals(roleUser) && isConsumerRecords(request.getRequestURI())) {
+            return true;
+        }
+
         if (EMPLOYEE.equals(roleUser) && isEmployee(request.getRequestURI())) {
             return true;
         }
@@ -160,6 +164,12 @@ public class TokenInterceptor implements HandlerInterceptor {
         return requestURI.contains("/smallsquare/order/delivered/");
 
     }
+
+    private boolean isConsumerRecords(String requestURI) {
+        return requestURI.contains("/smallsquare/records/byClient/");
+
+    }
+
 
 }
 

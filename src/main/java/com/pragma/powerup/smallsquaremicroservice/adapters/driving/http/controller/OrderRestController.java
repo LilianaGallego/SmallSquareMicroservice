@@ -2,6 +2,7 @@ package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.control
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.OrderRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.TraceabilityResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IOrderHandler;
 import com.pragma.powerup.smallsquaremicroservice.configuration.Constants;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
@@ -53,6 +54,8 @@ public class OrderRestController {
 
         return ResponseEntity.ok(orderHandler.getAllOrdersByStateEnum(stateEnum,page, size));
     }
+
+
 
     @Operation(summary = "Updated state order",
             responses = {
@@ -106,5 +109,19 @@ public class OrderRestController {
         orderHandler.cancelOrder(idOrder);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.ORDER_STATE_CANCEL_MESSAGE));
+    }
+
+    @SecurityRequirement(name = "jwt")
+    @Operation(summary = "Get all records by client",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Records by client",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
+                    @ApiResponse(responseCode = "404", description = "Record not found ",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+            })
+    @GetMapping("/records/byClient")
+    public ResponseEntity<List<TraceabilityResponseDto>> getAllRecordsOrdersByClient() {
+
+        return ResponseEntity.ok(orderHandler.getAllRecordsOrdersByClient());
     }
 }

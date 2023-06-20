@@ -11,6 +11,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repo
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.TraceabilityRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderPlateResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.TraceabilityResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderPlateResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
@@ -129,6 +130,11 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
     @Override
     public void updateOrder(OrderEntity order) {
         orderRepository.save(order);
+    }
+
+    @Override
+    public List<TraceabilityResponseDto> getAllRecordsOrdersByClient(Long idClient) {
+        return null;
     }
 
 

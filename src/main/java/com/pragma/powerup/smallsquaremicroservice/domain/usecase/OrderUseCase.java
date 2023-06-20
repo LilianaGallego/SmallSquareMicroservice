@@ -6,6 +6,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exce
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.TraceabilityRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderPlateResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.TraceabilityResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.exceptions.PlateNoFromRestautantException;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.UserNotRoleAuthorized;
@@ -90,10 +91,10 @@ public class OrderUseCase implements IOrderServicePort {
     @Override
     public List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
 
-        if ( restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(TokenInterceptor.getIdUser())==null){
+        if ( restaurantEmployeePersistencePort.findByIdEmployee(TokenInterceptor.getIdUser())==null){
             throw new UserNotRoleAuthorized();
         }
-        RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(TokenInterceptor.getIdUser());
+        RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.findByIdEmployee(TokenInterceptor.getIdUser());
         Long idRestaurant = restaurantEmployee.getIdRestaurant();
         return orderPersistencePort.getAllOrdersByStateEnum(stateEnum, idRestaurant,page, size);
     }
@@ -121,14 +122,25 @@ public class OrderUseCase implements IOrderServicePort {
     @Override
     public void validateRestaurant(OrderEntity orderBD,Long idEmployee) {
         Long idRestauratOrder = orderBD.getRestaurantEntity().getId();
-        Long idRestauntEmployee = restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee).getIdRestaurant();
-        if (!idRestauntEmployee.equals(idRestauratOrder)){
+        RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.findByIdEmployee(idEmployee);
+        Long idRestaurant = restaurantEmployee.getIdRestaurant();
+        if (!idRestaurant.equals(idRestauratOrder)){
             throw new PlateNoFromRestautantException();
         }
+        TraceabilityRequestDto traceabilityRequestDto = new TraceabilityRequestDto();
+        traceabilityRequestDto.setIdOrder(orderBD.getId());
+        traceabilityRequestDto.setIdClient(orderBD.getIdClient());
+        traceabilityRequestDto.setDate(orderBD.getDate());
+        traceabilityRequestDto.setStateOld("EARNING");
+        traceabilityRequestDto.setStateOld("PREPARATION");
+        traceabilityRequestDto.setEmailEmployee(TokenInterceptor.getEmail());
+        User user = userHttpPersistencePort.getClient(orderBD.getIdClient());
+        traceabilityRequestDto.setEmailClient(user.getMail());
+        traceabilityRequestDto.setEmailEmployee(user.getMail());
+        traceabilityPersistencePort.saveTraceability(traceabilityRequestDto);
         orderBD.setIdChef(idEmployee);
 
     }
-
 
 
     @Override
@@ -272,6 +284,10 @@ public class OrderUseCase implements IOrderServicePort {
         return traceabilityRequestDto;
     }
 
+    @Override
+    public List<TraceabilityResponseDto> getAllRecordsOrdersByClient() {
+        return orderPersistencePort.getAllRecordsOrdersByClient(TokenInterceptor.getIdUser());
+    }
 
 
 }

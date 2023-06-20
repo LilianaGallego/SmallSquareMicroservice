@@ -51,11 +51,14 @@ class OrderUseCaseTest {
     private IMessangerServicePersistencePort messengerServicePersistencePort;
 
     @Mock
+    private ITraceabilityPersistencePort traceabilityPersistencePort;
+
+    @Mock
     private IUserHttpPersistencePort userHttpPersistencePort;
     private IOrderServicePort orderUseCase;
     @BeforeEach
     void setUp() {
-        orderUseCase = new OrderUseCase(orderPersistencePort, restaurantPersistencePort, restaurantEmployeePersistencePort, messengerServicePersistencePort, userHttpPersistencePort);
+        orderUseCase = new OrderUseCase(orderPersistencePort, restaurantPersistencePort, restaurantEmployeePersistencePort, messengerServicePersistencePort, userHttpPersistencePort, traceabilityPersistencePort);
     }
 
     @Test
@@ -165,7 +168,7 @@ class OrderUseCaseTest {
         TokenInterceptor.setIdUser(idEmployee);
         RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee,idRestaurant);
 
-        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
+        when(restaurantEmployeePersistencePort.findByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
         when(orderPersistencePort.getAllOrdersByStateEnum(stateEnum, idRestaurant, page, size)).thenReturn(expectedOrders);
 
         // Act
@@ -173,7 +176,7 @@ class OrderUseCaseTest {
 
         // Assert
         assertEquals(expectedOrders, actualOrders);
-        verify(restaurantEmployeePersistencePort, times(2)).getRestaurantEmployeeByIdEmployee(idEmployee);
+        verify(restaurantEmployeePersistencePort, times(2)).findByIdEmployee(idEmployee);
         verify(orderPersistencePort, times(1)).getAllOrdersByStateEnum(stateEnum, idRestaurant, page, size);
     }
 
@@ -185,7 +188,7 @@ class OrderUseCaseTest {
         int size = 10;
         Long idUser = 1L;
         TokenInterceptor.setIdUser(idUser);
-        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idUser)).thenReturn(null);
+        when(restaurantEmployeePersistencePort.findByIdEmployee(idUser)).thenReturn(null);
 
         // Act and Assert
         assertThrows(UserNotRoleAuthorized.class, () -> orderUseCase.getAllOrdersByStateEnum(stateEnum, page, size));
@@ -242,7 +245,7 @@ class OrderUseCaseTest {
 
         when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
         when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
-        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
+        when(restaurantEmployeePersistencePort.findByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
         when(orderPersistencePort.updateStatusOrder(orderEntity, stateEnum, 3L, page, size))
                 .thenReturn(Collections.singletonList(new OrderResponseDto()));
 
@@ -255,7 +258,7 @@ class OrderUseCaseTest {
         assertEquals(orderEntity.getStateEnum(), stateEnum.name());
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, times(1)).findById(idOrder);
-        verify(restaurantEmployeePersistencePort, times(2)).getRestaurantEmployeeByIdEmployee(2L);
+        verify(restaurantEmployeePersistencePort, times(2)).findByIdEmployee(2L);
         verify(orderPersistencePort, times(1)).updateStatusOrder(orderEntity, stateEnum, orderEntity.getRestaurantEntity().getId(), page, size);
     }
 
@@ -273,7 +276,7 @@ class OrderUseCaseTest {
         assertThrows(NoDataFoundException.class, () -> orderUseCase.updateStatusOrder(idOrder, stateEnum, page, size));
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, never()).findById(anyLong());
-        verify(restaurantEmployeePersistencePort, never()).getRestaurantEmployeeByIdEmployee(anyLong());
+        verify(restaurantEmployeePersistencePort, never()).findByIdEmployee(anyLong());
         verify(orderPersistencePort, never()).updateStatusOrder(any(), any(), anyLong(), anyInt(), anyInt());
     }
 
@@ -289,13 +292,13 @@ class OrderUseCaseTest {
         RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee,3L);
 
 
-        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee))
+        when(restaurantEmployeePersistencePort.findByIdEmployee(idEmployee))
                 .thenReturn(restaurantEmployee);
 
         // Act and Assert
         assertDoesNotThrow(() -> orderUseCase.validateRestaurant(orderEntity, idEmployee));
         assertEquals(idEmployee, orderEntity.getIdChef());
-        verify(restaurantEmployeePersistencePort, times(1)).getRestaurantEmployeeByIdEmployee(idEmployee);
+        verify(restaurantEmployeePersistencePort, times(1)).findByIdEmployee(idEmployee);
     }
 
     @Test
@@ -310,13 +313,13 @@ class OrderUseCaseTest {
         RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee,3L);
 
 
-        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee))
+        when(restaurantEmployeePersistencePort.findByIdEmployee(idEmployee))
                 .thenReturn(restaurantEmployee);
 
         // Act and Assert
         assertThrows(PlateNoFromRestautantException.class, () -> orderUseCase.validateRestaurant(orderEntity, idEmployee));
         assertNull(orderEntity.getIdChef());
-        verify(restaurantEmployeePersistencePort, times(1)).getRestaurantEmployeeByIdEmployee(idEmployee);
+        verify(restaurantEmployeePersistencePort, times(1)).findByIdEmployee(idEmployee);
     }
 
     @Test
@@ -340,7 +343,7 @@ class OrderUseCaseTest {
         user.setPhone("+573118688145");
         when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
         when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
-        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
+        when(restaurantEmployeePersistencePort.findByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
         when(userHttpPersistencePort.getClient(orderEntity.getIdClient())).thenReturn(user);
 
         // Act
@@ -349,7 +352,7 @@ class OrderUseCaseTest {
         // Assert
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, times(1)).findById(idOrder);
-        verify(restaurantEmployeePersistencePort, times(1)).getRestaurantEmployeeByIdEmployee(idEmployee);
+        verify(restaurantEmployeePersistencePort, times(1)).findByIdEmployee(idEmployee);
         verify(userHttpPersistencePort, times(1)).getClient(user.getId());
         verify(orderPersistencePort, times(1)).updateOrder(orderEntity);
         verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
@@ -379,7 +382,7 @@ class OrderUseCaseTest {
         user.setPhone("+573118688145");
         when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
         when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
-        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
+        when(restaurantEmployeePersistencePort.findByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
         when(userHttpPersistencePort.getClient(orderEntity.getIdClient())).thenReturn(user);
 
         // Act
@@ -388,7 +391,7 @@ class OrderUseCaseTest {
         // Assert
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, times(1)).findById(idOrder);
-        verify(restaurantEmployeePersistencePort, times(1)).getRestaurantEmployeeByIdEmployee(idEmployee);
+        verify(restaurantEmployeePersistencePort, times(1)).findByIdEmployee(idEmployee);
         verify(userHttpPersistencePort, times(1)).getClient(user.getId());
         verify(orderPersistencePort, times(1)).updateOrder(orderEntity);
         verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
@@ -410,7 +413,7 @@ class OrderUseCaseTest {
         assertThrows(NoDataFoundException.class, () -> orderUseCase.updateOrder(idOrder, 10));
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, never()).findById(anyLong());
-        verify(restaurantEmployeePersistencePort, never()).getRestaurantEmployeeByIdEmployee(anyLong());
+        verify(restaurantEmployeePersistencePort, never()).findByIdEmployee(anyLong());
         verify(orderPersistencePort, never()).updateStatusOrder(any(), any(), anyLong(), anyInt(), anyInt());
     }
 
@@ -433,7 +436,7 @@ class OrderUseCaseTest {
         user.setPhone("+573118688145");
         when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
         when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
-        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
+        when(restaurantEmployeePersistencePort.findByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
 
 
         // Act & Assert
@@ -461,7 +464,7 @@ class OrderUseCaseTest {
         user.setPhone("3119879489");
         when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
         when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
-        when(restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
+        when(restaurantEmployeePersistencePort.findByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
         when(userHttpPersistencePort.getClient(orderEntity.getIdClient())).thenReturn(user);
 
 

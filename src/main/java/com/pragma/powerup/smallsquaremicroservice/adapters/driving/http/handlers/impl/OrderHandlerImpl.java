@@ -3,6 +3,7 @@ package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handler
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.OrderPlateRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.OrderRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.TraceabilityResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handlers.IOrderHandler;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderPlateRequestMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderRequestMapper;
@@ -67,6 +68,11 @@ public class OrderHandlerImpl implements IOrderHandler {
     @Override
     public void cancelOrder(Long idOrder) {
         orderServicePort.cancelOrder(idOrder);
+    }
+
+    @Override
+    public List<TraceabilityResponseDto> getAllRecordsOrdersByClient() {
+        return orderServicePort.getAllRecordsOrdersByClient();
     }
 
 }
