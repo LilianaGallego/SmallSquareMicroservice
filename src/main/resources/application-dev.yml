@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost/smallsquare
     username: root
-    password: 1234567
+    password: 123456
   jpa:
     hibernate:
       ddl-auto: update
@@ -28,3 +28,4 @@ my:
     getEmployee: "http://localhost:8080/user/employee/getEmployeeByDni/"
     message: "http://localhost:9080/messengerservice/send"
     getClient: "http://localhost:8080/user/client/byId/"
+    traceability: "http://localhost:8070/traceability/record"

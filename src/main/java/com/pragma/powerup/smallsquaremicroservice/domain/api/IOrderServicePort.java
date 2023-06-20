@@ -1,14 +1,17 @@
 package com.pragma.powerup.smallsquaremicroservice.domain.api;
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.OrderEntity;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.TraceabilityRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderPlateResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.TraceabilityResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Restaurant;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IOrderServicePort {
     void saveOrder(Long idRestaurant, Order order);
@@ -31,5 +34,9 @@ public interface IOrderServicePort {
 
     void validateStateEarning(OrderEntity order);
 
+    void saveRecord(TraceabilityRequestDto traceabilityRequestDto);
+    TraceabilityRequestDto saveTraceabilityDto(Optional<OrderEntity> order);
+
+    List<TraceabilityResponseDto> getAllRecordsOrdersByClient();
 
 }

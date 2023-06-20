@@ -2,6 +2,7 @@ package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.handler
 
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.OrderRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.TraceabilityResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 
 import java.util.List;
@@ -14,5 +15,7 @@ public interface IOrderHandler {
     void updateOrderReady(Long idOrder);
     void updateOrderDelivered(Long idOrder,int codeClient);
     void cancelOrder(Long idOrder);
+
+    List<TraceabilityResponseDto> getAllRecordsOrdersByClient();
 
 }

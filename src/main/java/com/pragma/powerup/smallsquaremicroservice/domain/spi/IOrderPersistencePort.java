@@ -3,6 +3,7 @@ package com.pragma.powerup.smallsquaremicroservice.domain.spi;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.OrderEntity;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderPlateResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.TraceabilityResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
@@ -23,4 +24,6 @@ public interface IOrderPersistencePort {
     List<OrderPlateResponseDto> getAllOrdersByOrder(OrderResponseDto order);
     List<OrderResponseDto> updateStatusOrder(OrderEntity order, StateEnum stateEnum, Long idRestaurant, int page, int size);
     void updateOrder(OrderEntity order);
+
+    List<TraceabilityResponseDto> getAllRecordsOrdersByClient(Long idClient);
 }

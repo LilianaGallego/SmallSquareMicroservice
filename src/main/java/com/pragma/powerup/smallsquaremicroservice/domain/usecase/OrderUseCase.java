@@ -3,8 +3,10 @@ package com.pragma.powerup.smallsquaremicroservice.domain.usecase;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.entity.OrderEntity;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.NoDataFoundException;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.exceptions.OrderInProcessesException;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.TraceabilityRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderPlateResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.TraceabilityResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.exceptions.PlateNoFromRestautantException;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
 import com.pragma.powerup.smallsquaremicroservice.configuration.security.exception.UserNotRoleAuthorized;
@@ -32,15 +34,17 @@ public class OrderUseCase implements IOrderServicePort {
     private final IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
     private final IMessangerServicePersistencePort messengerServicePersistencePort;
     private final IUserHttpPersistencePort userHttpPersistencePort;
+    private final ITraceabilityPersistencePort traceabilityPersistencePort;
 
     String phone = "+573118688145";
 
-    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IMessangerServicePersistencePort messengerServicePersistencePort, IUserHttpPersistencePort userHttpPersistencePort) {
+    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IMessangerServicePersistencePort messengerServicePersistencePort, IUserHttpPersistencePort userHttpPersistencePort, ITraceabilityPersistencePort traceabilityPersistencePort) {
         this.orderPersistencePort = orderPersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.restaurantEmployeePersistencePort = restaurantEmployeePersistencePort;
         this.messengerServicePersistencePort = messengerServicePersistencePort;
         this.userHttpPersistencePort = userHttpPersistencePort;
+        this.traceabilityPersistencePort = traceabilityPersistencePort;
     }
 
     @Override
@@ -50,6 +54,9 @@ public class OrderUseCase implements IOrderServicePort {
         if (orderPersistencePort.existsByIdClient(order.getIdClient())) {
             OrderEntity orderBD = orderPersistencePort.findByIdClient(order.getIdClient());
             validateState(orderBD,order,restaurant);
+            TraceabilityRequestDto traceabilityRequestDto =saveTraceabilityDto(Optional.of(orderBD));
+
+            traceabilityPersistencePort.saveTraceability(traceabilityRequestDto);
         }
         order.setDate(LocalDate.now());
         order.setRestaurant(restaurant);
@@ -73,6 +80,9 @@ public class OrderUseCase implements IOrderServicePort {
                 order.setDate(LocalDate.now());
                 order.setRestaurant(restaurant);
                 orderPersistencePort.saveOrder(order);
+                TraceabilityRequestDto traceabilityRequestDto = saveTraceabilityDto(Optional.of(orderBD));
+
+                traceabilityPersistencePort.saveTraceability(traceabilityRequestDto);
             }
         }
 
@@ -81,10 +91,10 @@ public class OrderUseCase implements IOrderServicePort {
     @Override
     public List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size) {
 
-        if ( restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(TokenInterceptor.getIdUser())==null){
+        if ( restaurantEmployeePersistencePort.findByIdEmployee(TokenInterceptor.getIdUser())==null){
             throw new UserNotRoleAuthorized();
         }
-        RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(TokenInterceptor.getIdUser());
+        RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.findByIdEmployee(TokenInterceptor.getIdUser());
         Long idRestaurant = restaurantEmployee.getIdRestaurant();
         return orderPersistencePort.getAllOrdersByStateEnum(stateEnum, idRestaurant,page, size);
     }
@@ -112,14 +122,25 @@ public class OrderUseCase implements IOrderServicePort {
     @Override
     public void validateRestaurant(OrderEntity orderBD,Long idEmployee) {
         Long idRestauratOrder = orderBD.getRestaurantEntity().getId();
-        Long idRestauntEmployee = restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee).getIdRestaurant();
-        if (!idRestauntEmployee.equals(idRestauratOrder)){
+        RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.findByIdEmployee(idEmployee);
+        Long idRestaurant = restaurantEmployee.getIdRestaurant();
+        if (!idRestaurant.equals(idRestauratOrder)){
             throw new PlateNoFromRestautantException();
         }
+        TraceabilityRequestDto traceabilityRequestDto = new TraceabilityRequestDto();
+        traceabilityRequestDto.setIdOrder(orderBD.getId());
+        traceabilityRequestDto.setIdClient(orderBD.getIdClient());
+        traceabilityRequestDto.setDate(orderBD.getDate());
+        traceabilityRequestDto.setStateOld("EARNING");
+        traceabilityRequestDto.setStateOld("PREPARATION");
+        traceabilityRequestDto.setEmailEmployee(TokenInterceptor.getEmail());
+        User user = userHttpPersistencePort.getClient(orderBD.getIdClient());
+        traceabilityRequestDto.setEmailClient(user.getMail());
+        traceabilityRequestDto.setEmailEmployee(user.getMail());
+        traceabilityPersistencePort.saveTraceability(traceabilityRequestDto);
         orderBD.setIdChef(idEmployee);
 
     }
-
 
 
     @Override
@@ -140,6 +161,8 @@ public class OrderUseCase implements IOrderServicePort {
         switch (order.getStateEnum()) {
             case "PREPARATION", "READY" ->
                 validatePhoneClient(order, codeClient);
+
+
 
             default ->
                 throw new NotStatusInProcess();
@@ -243,5 +266,28 @@ public class OrderUseCase implements IOrderServicePort {
         }
 
     }
+
+    @Override
+    public void saveRecord(TraceabilityRequestDto traceabilityRequestDto) {
+        traceabilityPersistencePort.saveTraceability(traceabilityRequestDto);
+    }
+
+    @Override
+    public TraceabilityRequestDto saveTraceabilityDto(Optional<OrderEntity> orderBD) {
+        TraceabilityRequestDto traceabilityRequestDto = new TraceabilityRequestDto();
+
+        traceabilityRequestDto.setIdOrder(orderBD.get().getId());
+        traceabilityRequestDto.setIdEmployee(TokenInterceptor.getIdUser());
+        traceabilityRequestDto.setIdClient(orderBD.get().getIdClient());
+        traceabilityRequestDto.setDate(orderBD.get().getDate());
+        traceabilityRequestDto.setStateNew("EARNING");
+        return traceabilityRequestDto;
+    }
+
+    @Override
+    public List<TraceabilityResponseDto> getAllRecordsOrdersByClient() {
+        return orderPersistencePort.getAllRecordsOrdersByClient(TokenInterceptor.getIdUser());
+    }
+
 
 }

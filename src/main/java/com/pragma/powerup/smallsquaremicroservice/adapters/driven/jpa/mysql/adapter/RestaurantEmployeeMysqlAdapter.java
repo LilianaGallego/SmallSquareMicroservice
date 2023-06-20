@@ -20,8 +20,8 @@ public class RestaurantEmployeeMysqlAdapter implements IRestaurantEmployeePersis
     }
 
     @Override
-    public RestaurantEmployee getRestaurantEmployeeByIdEmployee(Long idEmployee) {
-        RestaurantEmployeeEntity restaurantEmployeeEntity = restaurantEmployeeRepository.getRestaurantEmployeeByIdEmployee(idEmployee);
+    public RestaurantEmployee findByIdEmployee(Long idEmployee) {
+        RestaurantEmployeeEntity restaurantEmployeeEntity = restaurantEmployeeRepository.findByIdEmployee(idEmployee);
          return restaurantEmployeeEntityMapper.toRestaurantEmployee(restaurantEmployeeEntity);
     }
 

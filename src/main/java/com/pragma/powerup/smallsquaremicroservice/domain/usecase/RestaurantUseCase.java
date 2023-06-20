@@ -127,7 +127,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     @Override
     public RestaurantEmployee getRestaurantEmployeeByIdEmployee(Long idEmployee) {
-        return restaurantEmployeePersistencePort.getRestaurantEmployeeByIdEmployee(idEmployee);
+        return restaurantEmployeePersistencePort.findByIdEmployee(idEmployee);
     }
 
     @Override

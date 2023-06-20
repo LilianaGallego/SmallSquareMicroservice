@@ -5,6 +5,7 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mapp
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.*;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.EmployeeHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.MessangerServiceHttpAdapter;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.TraceabilityHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.adapter.UserHttpAdapter;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderPlateResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderResponseMapper;
@@ -70,6 +71,10 @@ public class BeanConfiguration {
     }
 
     @Bean
+    public ITraceabilityPersistencePort traceabilityPersistencePort() {
+        return new TraceabilityHttpAdapter();
+    }
+    @Bean
     public IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort() {
         return new RestaurantEmployeeMysqlAdapter(restaurantEmployeeRepository, restaurantEmployeeEntityMapper);
     }
@@ -99,11 +104,11 @@ public class BeanConfiguration {
 
     @Bean
     public IOrderPersistencePort orderPersistencePort() {
-        return new OrderMysqlAdapter(orderEntityMapper,orderPlateEntityMapper, orderPlateResponseMapper, orderResponseMapper,orderRepository, orderPlateRepository);
+        return new OrderMysqlAdapter(orderEntityMapper,orderPlateEntityMapper, orderPlateResponseMapper, orderResponseMapper,orderRepository, orderPlateRepository, restaurantEmployeeRepository,traceabilityPersistencePort());
     }
 
     @Bean
     public IOrderServicePort orderServicePort() {
-        return new OrderUseCase(orderPersistencePort(),restaurantPersistencePort(), restaurantEmployeePersistencePort(), messengerServicePersistencePort(), userHttpPersistencePort());
+        return new OrderUseCase(orderPersistencePort(),restaurantPersistencePort(), restaurantEmployeePersistencePort(), messengerServicePersistencePort(), userHttpPersistencePort(), traceabilityPersistencePort());
     }
 }
