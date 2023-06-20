@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IRestaurantEmployeeRepository extends JpaRepository<RestaurantEmployeeEntity, Long> {
     RestaurantEmployeeEntity getRestaurantEmployeeByIdEmployee(Long idEmployee);
+    
 }

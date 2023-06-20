@@ -21,6 +21,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     private static String token;
     @Setter
     private static Long idUser;
+    private static String email;
     private static final String OWNER= "ROLE_OWNER";
     private static final String ADMIN= "ROLE_ADMIN";
     private static final String CONSUMER= "ROLE_CONSUMER";
@@ -33,6 +34,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     public static Long getIdUser() {
         return idUser;
     }
+    public static String getEmail() {return email;}
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
@@ -47,6 +49,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         DecodedJWT decodedJWT = JWT.decode(jwtToken);
         roles = decodedJWT.getClaim("roles").asList(String.class);
         idUser = decodedJWT.getClaim("id").asLong();
+        email = decodedJWT.getClaim("email").asString();
 
         String roleUser = roles.get(0);
 

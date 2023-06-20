@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface IOrderPlateRepository extends JpaRepository<OrderPlateEntity, Long> {
     List<OrderPlateEntity> getAllByOrderEntityId(Long idOrder);
+
 }

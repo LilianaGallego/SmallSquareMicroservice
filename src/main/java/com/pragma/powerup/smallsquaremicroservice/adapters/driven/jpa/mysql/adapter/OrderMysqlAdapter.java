@@ -7,14 +7,18 @@ import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mapp
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.mappers.IOrderPlateEntityMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IOrderPlateRepository;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IOrderRepository;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driven.jpa.mysql.repositories.IRestaurantEmployeeRepository;
+import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request.TraceabilityRequestDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderPlateResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response.OrderResponseDto;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderPlateResponseMapper;
 import com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.mapper.IOrderResponseMapper;
+import com.pragma.powerup.smallsquaremicroservice.configuration.security.TokenInterceptor;
 import com.pragma.powerup.smallsquaremicroservice.domain.exceptions.PageNoValidException;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.Order;
 import com.pragma.powerup.smallsquaremicroservice.domain.model.OrderPlate;
 import com.pragma.powerup.smallsquaremicroservice.domain.spi.IOrderPersistencePort;
+import com.pragma.powerup.smallsquaremicroservice.domain.spi.ITraceabilityPersistencePort;
 import com.pragma.powerup.smallsquaremicroservice.utilitis.StateEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -35,16 +39,27 @@ public class OrderMysqlAdapter implements IOrderPersistencePort {
 
     private final IOrderRepository orderRepository;
     private final IOrderPlateRepository orderPlateRepository;
+
+    private final IRestaurantEmployeeRepository restaurantEmployeeRepository;
     private static OrderEntity orderEntity;
     public static OrderEntity getOrderEntity() {
         return orderEntity;
     }
+    private final ITraceabilityPersistencePort traceabilityPersistencePort;
 
     @Override
     public void saveOrder(Order order) {
 
         orderEntity = orderRepository.save(orderEntityMapper.toEntity(order));
         orderEntity.setStateEnum(StateEnum.EARNING.name());
+        TraceabilityRequestDto traceabilityRequestDto = new TraceabilityRequestDto();
+        traceabilityRequestDto.setIdOrder(orderEntity.getId());
+        traceabilityRequestDto.setIdClient(orderEntity.getIdClient());
+        traceabilityRequestDto.setDate(orderEntity.getDate());
+        traceabilityRequestDto.setStateNew("EARNING");
+        traceabilityRequestDto.setEmailClient(TokenInterceptor.getEmail());
+        traceabilityPersistencePort.saveTraceability(traceabilityRequestDto);
+
     }
 
     @Override
