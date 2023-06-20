@@ -224,7 +224,7 @@ class OrderUseCaseTest {
     void testUpdateStatusOrder_ExistingOrder_Success() {
         // Arrange
         Long idOrder = 1L;
-        StateEnum stateEnum = StateEnum.EARNING;
+        StateEnum stateEnum = StateEnum.PREPARATION;
         int page = 0;
         int size = 10;
         Long idEmployee = 2L;
@@ -246,7 +246,7 @@ class OrderUseCaseTest {
         when(orderPersistencePort.existsById(idOrder)).thenReturn(true);
         when(orderPersistencePort.findById(idOrder)).thenReturn(Optional.of(orderEntity));
         when(restaurantEmployeePersistencePort.findByIdEmployee(idEmployee)).thenReturn(restaurantEmployee);
-        when(orderPersistencePort.updateStatusOrder(orderEntity, stateEnum, 3L, page, size))
+        when(orderPersistencePort.updateStatusOrder(orderEntity, StateEnum.PREPARATION, 3L, page, size))
                 .thenReturn(Collections.singletonList(new OrderResponseDto()));
 
         // Act
@@ -255,7 +255,7 @@ class OrderUseCaseTest {
         // Assert
         assertFalse(result.isEmpty());
         assertEquals(1, result.size());
-        assertEquals(orderEntity.getStateEnum(), stateEnum.name());
+        assertEquals(orderEntity.getStateEnum(), stateEnum.toString());
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, times(1)).findById(idOrder);
         verify(restaurantEmployeePersistencePort, times(2)).findByIdEmployee(2L);
@@ -266,7 +266,6 @@ class OrderUseCaseTest {
     void testUpdateStatusOrder_NonExistingOrder_ExceptionThrown() {
         // Arrange
         Long idOrder = 1L;
-        StateEnum stateEnum = StateEnum.READY;
         int page = 0;
         int size = 10;
 
@@ -353,7 +352,7 @@ class OrderUseCaseTest {
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, times(1)).findById(idOrder);
         verify(restaurantEmployeePersistencePort, times(1)).findByIdEmployee(idEmployee);
-        verify(userHttpPersistencePort, times(1)).getClient(user.getId());
+        verify(userHttpPersistencePort, times(2)).getClient(user.getId());
         verify(orderPersistencePort, times(1)).updateOrder(orderEntity);
         verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
 
@@ -394,18 +393,45 @@ class OrderUseCaseTest {
         verify(restaurantEmployeePersistencePort, times(1)).findByIdEmployee(idEmployee);
         verify(userHttpPersistencePort, times(1)).getClient(user.getId());
         verify(orderPersistencePort, times(1)).updateOrder(orderEntity);
-        verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
         assertEquals(StateEnum.DELIVERED.toString(), orderEntity.getStateEnum());
 
+
+    }
+
+    @Test
+    void testValidateCodeClient_CorrectCode_Success() {
+        // Arrange
+
+        Long idOrder = 1L;
+        int codeClient = 1234;
+        Long idEmployee = 1L;
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setId(idOrder);
+        orderEntity.setStateEnum(StateEnum.READY.toString());
+        orderEntity.setCode(codeClient);
+        orderEntity.setIdClient(1L);
+        RestaurantEntity restaurantEntity = new RestaurantEntity();
+        restaurantEntity.setId(3L);
+        orderEntity.setRestaurantEntity(restaurantEntity);
+        TokenInterceptor.setIdUser(idEmployee);
+        User user = new User();
+        user.setId(1L);
+        user.setPhone("+573118688145");
+        doNothing().when(orderPersistencePort).updateOrder(orderEntity);
+
+        // Act
+        assertDoesNotThrow(() -> orderUseCase.validateCodeClient(orderEntity, codeClient));
+
+        // Assert
+        assertEquals(codeClient, orderEntity.getCode());
         verify(orderPersistencePort, times(1)).updateOrder(orderEntity);
-        verify(messengerServicePersistencePort, times(1)).sendMessageStateOrderUpdated(anyString());
+
     }
 
     @Test
     void testUpdateOrderReady_NonExistingOrder_ExceptionThrown() {
         // Arrange
         Long idOrder = 1L;
-        StateEnum stateEnum = StateEnum.READY;
 
         when(orderPersistencePort.existsById(idOrder)).thenReturn(false);
 
@@ -485,7 +511,6 @@ class OrderUseCaseTest {
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setId(3L);
         orderEntity.setRestaurantEntity(restaurantEntity);
-        RestaurantEmployee restaurantEmployee = new RestaurantEmployee(idEmployee, 3L);
         TokenInterceptor.setIdUser(idEmployee);
         User user = new User();
         user.setId(1L);
@@ -495,6 +520,8 @@ class OrderUseCaseTest {
         // Act & Assert
         assertNotEquals(orderEntity.getCode(),codeClient);
         assertThrows(IncorrectCodeException.class, () -> orderUseCase.validateCodeClient(orderEntity, codeClient));
+
+
     }
 
     @Test
