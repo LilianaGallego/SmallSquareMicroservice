@@ -162,7 +162,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     }
 
     private boolean isConsumerRecords(String requestURI) {
-        return requestURI.startsWith("/smallsquare/records/byClient/");
+        return requestURI.contains("/smallsquare/records/byClient");
 
     }
 

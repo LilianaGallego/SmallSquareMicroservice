@@ -264,9 +264,15 @@ public class OrderUseCase implements IOrderServicePort {
                 order.setStateEnum(StateEnum.CANCELLED.toString());
                 orderPersistencePort.updateOrder(order);
                 TraceabilityRequestDto traceabilityRequestDto = new TraceabilityRequestDto();
+                traceabilityRequestDto.setIdOrder(order.getId());
+                traceabilityRequestDto.setIdClient(order.getIdClient());
+                traceabilityRequestDto.setDate(order.getDate());
                 traceabilityRequestDto.setStateOld(EARNING);
                 traceabilityRequestDto.setStateNew(CANCELLED);
-                saveRecord(traceabilityRequestDto,order);
+                traceabilityRequestDto.setEmailClient(TokenInterceptor.getEmail());
+               // User user2 = userHttpPersistencePort.getClient(order.getIdClient());
+               // traceabilityRequestDto.setEmailEmployee(user2.getMail());
+                traceabilityPersistencePort.saveTraceability(traceabilityRequestDto);
             }
 
             default ->

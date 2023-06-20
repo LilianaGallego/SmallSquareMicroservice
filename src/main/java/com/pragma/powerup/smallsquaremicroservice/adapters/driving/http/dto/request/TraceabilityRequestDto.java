@@ -20,7 +20,6 @@ public class TraceabilityRequestDto {
     private LocalDate date;
     private String stateOld;
     private String stateNew;
-    private String urlLogo;
     private Long idEmployee;
     private String emailEmployee;
 }
