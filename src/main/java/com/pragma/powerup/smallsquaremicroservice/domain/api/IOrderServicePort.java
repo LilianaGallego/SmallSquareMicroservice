@@ -18,12 +18,12 @@ public interface IOrderServicePort {
     void saveOrderPlate(OrderPlate orderPlate);
     void validateState(OrderEntity orderBD, Order order, Restaurant restaurant);
     void validateRestaurant(OrderEntity orderBD, Long idEmployee);
-    void validatePhoneClient(OrderEntity order, int codeClient);
+    void validatePhoneClient(OrderEntity order);
     void validateCodeClient(OrderEntity order, int codeClient);
     List<OrderResponseDto> getAllOrdersByStateEnum(StateEnum stateEnum, int page, int size);
 
     List<OrderPlateResponseDto> getAllOrdersByOrder(OrderResponseDto order);
-    List<OrderResponseDto> updateStatusOrder(Long idOrder, StateEnum stateEnum, int page, int size);
+    List<OrderResponseDto> updateStatusOrder(Long idOrder, int page, int size);
 
     void updateOrder(Long idOrder, int codeClient);
     void sendMessageOrder(OrderEntity order, int code);
@@ -34,7 +34,7 @@ public interface IOrderServicePort {
 
     void validateStateEarning(OrderEntity order);
 
-    void saveRecord(TraceabilityRequestDto traceabilityRequestDto);
+    void saveRecord(TraceabilityRequestDto traceabilityRequestDto,OrderEntity order);
     TraceabilityRequestDto saveTraceabilityDto(Optional<OrderEntity> order);
 
     List<TraceabilityResponseDto> getAllRecordsOrdersByClient();

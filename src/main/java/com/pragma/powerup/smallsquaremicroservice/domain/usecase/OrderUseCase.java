@@ -36,6 +36,12 @@ public class OrderUseCase implements IOrderServicePort {
     private final IUserHttpPersistencePort userHttpPersistencePort;
     private final ITraceabilityPersistencePort traceabilityPersistencePort;
 
+    public static final String READY ="READY";
+    public static final String EARNING= "EARNING";
+    public static final String DELIVERED = "DELIVERED";
+    public static final String CANCELLED = "CANCELLED";
+    public static final String PREPARATION = "PREPARATION";
+
     String phone = "+573118688145";
 
     public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort, IMessangerServicePersistencePort messengerServicePersistencePort, IUserHttpPersistencePort userHttpPersistencePort, ITraceabilityPersistencePort traceabilityPersistencePort) {
@@ -73,8 +79,8 @@ public class OrderUseCase implements IOrderServicePort {
     @Override
     public void validateState(OrderEntity orderBD, Order order, Restaurant restaurant) {
         switch (orderBD.getStateEnum()){
-            case "READY","EARNING","PREPARATION" -> throw new OrderInProcessesException();
-            case "CANCELLED","DELIVERED" -> {
+            case READY ,EARNING ,PREPARATION -> throw new OrderInProcessesException();
+            case CANCELLED ,DELIVERED -> {
                 order.setStateEnum(StateEnum.EARNING);
                 order.setIdClient(TokenInterceptor.getIdUser());
                 order.setDate(LocalDate.now());
@@ -84,6 +90,7 @@ public class OrderUseCase implements IOrderServicePort {
 
                 traceabilityPersistencePort.saveTraceability(traceabilityRequestDto);
             }
+            default ->throw new OrderInProcessesException();
         }
 
     }
@@ -106,14 +113,14 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     @Override
-    public List<OrderResponseDto> updateStatusOrder(Long idOrder, StateEnum stateEnum, int page, int size) {
+    public List<OrderResponseDto> updateStatusOrder(Long idOrder, int page, int size) {
         if(orderPersistencePort.existsById(idOrder)){
             Optional<OrderEntity> order = orderPersistencePort.findById(idOrder);
             Long idEmployee = TokenInterceptor.getIdUser();
-            order.get().setStateEnum(stateEnum.name());
+            order.get().setStateEnum(StateEnum.PREPARATION.toString());
             validateRestaurant(order.get(),idEmployee);
 
-            return orderPersistencePort.updateStatusOrder(order.get(), stateEnum, order.get().getRestaurantEntity().getId(), page, size);
+            return orderPersistencePort.updateStatusOrder(order.get(), StateEnum.PREPARATION, order.get().getRestaurantEntity().getId(), page, size);
         }
         throw new NoDataFoundException();
 
@@ -121,23 +128,12 @@ public class OrderUseCase implements IOrderServicePort {
 
     @Override
     public void validateRestaurant(OrderEntity orderBD,Long idEmployee) {
-        Long idRestauratOrder = orderBD.getRestaurantEntity().getId();
-        RestaurantEmployee restaurantEmployee = restaurantEmployeePersistencePort.findByIdEmployee(idEmployee);
-        Long idRestaurant = restaurantEmployee.getIdRestaurant();
-        if (!idRestaurant.equals(idRestauratOrder)){
+
+
+        if (!restaurantEmployeePersistencePort.findByIdEmployee(idEmployee).getIdRestaurant().equals(orderBD.getRestaurantEntity().getId())){
             throw new PlateNoFromRestautantException();
         }
-        TraceabilityRequestDto traceabilityRequestDto = new TraceabilityRequestDto();
-        traceabilityRequestDto.setIdOrder(orderBD.getId());
-        traceabilityRequestDto.setIdClient(orderBD.getIdClient());
-        traceabilityRequestDto.setDate(orderBD.getDate());
-        traceabilityRequestDto.setStateOld("EARNING");
-        traceabilityRequestDto.setStateOld("PREPARATION");
-        traceabilityRequestDto.setEmailEmployee(TokenInterceptor.getEmail());
-        User user = userHttpPersistencePort.getClient(orderBD.getIdClient());
-        traceabilityRequestDto.setEmailClient(user.getMail());
-        traceabilityRequestDto.setEmailEmployee(user.getMail());
-        traceabilityPersistencePort.saveTraceability(traceabilityRequestDto);
+
         orderBD.setIdChef(idEmployee);
 
     }
@@ -159,11 +155,27 @@ public class OrderUseCase implements IOrderServicePort {
     public void validateStateOrder(OrderEntity order, int codeClient) {
 
         switch (order.getStateEnum()) {
-            case "PREPARATION", "READY" ->
-                validatePhoneClient(order, codeClient);
+            case PREPARATION-> {
+                validatePhoneClient(order);
+                order.setStateEnum(StateEnum.READY.toString());
+                int code = generateCode();
+                order.setCode(code);
+                orderPersistencePort.updateOrder(order);
+                sendMessageOrder(order, code);
+                TraceabilityRequestDto traceabilityRequestDto = new TraceabilityRequestDto();
 
-
-
+                traceabilityRequestDto.setStateOld(PREPARATION);
+                traceabilityRequestDto.setStateNew(READY);
+                saveRecord(traceabilityRequestDto,order);
+            }
+            case READY->{
+                order.setStateEnum(StateEnum.DELIVERED.toString());
+                orderPersistencePort.updateOrder(order);
+                TraceabilityRequestDto traceabilityRequestDto = new TraceabilityRequestDto();
+                traceabilityRequestDto.setStateOld(READY);
+                traceabilityRequestDto.setStateNew(DELIVERED);
+                saveRecord(traceabilityRequestDto,order);
+            }
             default ->
                 throw new NotStatusInProcess();
 
@@ -172,27 +184,11 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     @Override
-    public void validatePhoneClient(OrderEntity order, int codeClient) {
+    public void validatePhoneClient(OrderEntity order) {
         User user = userHttpPersistencePort.getClient(order.getIdClient());
         if(!user.getPhone().equals(phone)){
             throw new PhoneClientInvalidException();
         }
-        switch (order.getStateEnum()){
-            case "PREPARATION" -> {
-                order.setStateEnum(StateEnum.READY.toString());
-                int code = generateCode();
-                order.setCode(code);
-                orderPersistencePort.updateOrder(order);
-                sendMessageOrder(order, code);
-            }
-
-            case "READY"-> {
-                order.setStateEnum(StateEnum.DELIVERED.toString());
-                validateCodeClient(order,codeClient);
-            }
-        }
-
-
     }
 
     @Override
@@ -210,16 +206,21 @@ public class OrderUseCase implements IOrderServicePort {
     public void sendMessageOrder(OrderEntity order, int code) {
         String message;
         switch (order.getStateEnum()){
-            case "READY"->{
+            case READY->{
                 message= "Estimado cliente su pedido con id: " + order.getId()+ "." +
                     "\nYa esta listo para reclamar con el siguiente codigo: " + code;
                 messengerServicePersistencePort.sendMessageStateOrderUpdated(message);}
 
 
-            case "DELIVERED"-> {
+            case DELIVERED-> {
                 message = "Estimado cliente su pedido con id: " + order.getId() + "." +
                         "\nSe entrego con exito";
-                messengerServicePersistencePort.sendMessageStateOrderUpdated(message);}
+                messengerServicePersistencePort.sendMessageStateOrderUpdated(message);
+                TraceabilityRequestDto traceabilityRequestDto = new TraceabilityRequestDto();
+                traceabilityRequestDto.setStateOld(READY);
+                traceabilityRequestDto.setStateNew(DELIVERED);
+                saveRecord(traceabilityRequestDto,order);
+            }
 
             default -> throw  new NotStatusInProcess();
         }
@@ -243,32 +244,47 @@ public class OrderUseCase implements IOrderServicePort {
     @Override
     public void validateStateEarning(OrderEntity order) {
         switch (order.getStateEnum()){
-            case "PREPARATION", "READY"->{
+            case PREPARATION , READY->{
                 String message = "Lo sentimos tu pedido ya esta en proceso y no puede cancelarse";
                 messengerServicePersistencePort.sendMessageStateOrderUpdated(message);
                 throw  new OrderNotCancellException();
             }
-            case "DELIVERED"->{
+            case DELIVERED->{
                 String message = "Lo sentimos tu pedido  ya se entrego y no puede cancelarse";
                 messengerServicePersistencePort.sendMessageStateOrderUpdated(message);
                 throw  new NotStatusInProcess();
             }
 
-            case "CANCELLED"->{
+            case CANCELLED->{
                 String message = "Lo sentimos tu pedido  ya fue cancelado con anterioridad";
                 messengerServicePersistencePort.sendMessageStateOrderUpdated(message);
                 throw  new NotStatusInProcess();
             }
-            case "EARNING"->{
+            case EARNING->{
                 order.setStateEnum(StateEnum.CANCELLED.toString());
                 orderPersistencePort.updateOrder(order);
+                TraceabilityRequestDto traceabilityRequestDto = new TraceabilityRequestDto();
+                traceabilityRequestDto.setStateOld(EARNING);
+                traceabilityRequestDto.setStateNew(CANCELLED);
+                saveRecord(traceabilityRequestDto,order);
             }
+
+            default ->
+                throw  new NotStatusInProcess();
+
         }
 
     }
 
     @Override
-    public void saveRecord(TraceabilityRequestDto traceabilityRequestDto) {
+    public void saveRecord(TraceabilityRequestDto traceabilityRequestDto, OrderEntity order) {
+
+        traceabilityRequestDto.setIdOrder(order.getId());
+        traceabilityRequestDto.setIdClient(order.getIdClient());
+        traceabilityRequestDto.setDate(order.getDate());
+        traceabilityRequestDto.setEmailEmployee(TokenInterceptor.getEmail());
+        User user2 = userHttpPersistencePort.getClient(order.getIdClient());
+        traceabilityRequestDto.setEmailClient(user2.getMail());
         traceabilityPersistencePort.saveTraceability(traceabilityRequestDto);
     }
 
@@ -280,7 +296,7 @@ public class OrderUseCase implements IOrderServicePort {
         traceabilityRequestDto.setIdEmployee(TokenInterceptor.getIdUser());
         traceabilityRequestDto.setIdClient(orderBD.get().getIdClient());
         traceabilityRequestDto.setDate(orderBD.get().getDate());
-        traceabilityRequestDto.setStateNew("EARNING");
+        traceabilityRequestDto.setStateNew(EARNING);
         return traceabilityRequestDto;
     }
 

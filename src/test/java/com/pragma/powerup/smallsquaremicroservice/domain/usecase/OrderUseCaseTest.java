@@ -250,7 +250,7 @@ class OrderUseCaseTest {
                 .thenReturn(Collections.singletonList(new OrderResponseDto()));
 
         // Act
-        List<OrderResponseDto> result = orderUseCase.updateStatusOrder(idOrder, stateEnum, page, size);
+        List<OrderResponseDto> result = orderUseCase.updateStatusOrder(idOrder, page, size);
         orderUseCase.validateRestaurant(orderEntity, idEmployee);
         // Assert
         assertFalse(result.isEmpty());
@@ -273,7 +273,7 @@ class OrderUseCaseTest {
         when(orderPersistencePort.existsById(idOrder)).thenReturn(false);
 
         // Act and Assert
-        assertThrows(NoDataFoundException.class, () -> orderUseCase.updateStatusOrder(idOrder, stateEnum, page, size));
+        assertThrows(NoDataFoundException.class, () -> orderUseCase.updateStatusOrder(idOrder, page, size));
         verify(orderPersistencePort, times(1)).existsById(idOrder);
         verify(orderPersistencePort, never()).findById(anyLong());
         verify(restaurantEmployeePersistencePort, never()).findByIdEmployee(anyLong());
