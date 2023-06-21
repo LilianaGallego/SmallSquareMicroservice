@@ -65,8 +65,8 @@ public class OrderRestController {
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
             })
     @PatchMapping("/order/state/{idOrder}")
-    public ResponseEntity<List<OrderResponseDto>> updateStateOrder( @PathVariable Long idOrder, @RequestParam StateEnum stateEnum,@RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(orderHandler.updateStatusOrder(idOrder, stateEnum, page, size));
+    public ResponseEntity<List<OrderResponseDto>> updateStateOrder( @PathVariable Long idOrder,@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(orderHandler.updateStatusOrder(idOrder, page, size));
     }
 
     @Operation(summary = "Updated state order",

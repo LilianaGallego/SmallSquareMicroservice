@@ -1,19 +1,13 @@
-package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.request;
-
+package com.pragma.powerup.smallsquaremicroservice.adapters.driving.http.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
-@Setter
-public class TraceabilityRequestDto {
-
+public class TraceabilityResponseDto {
     private Long idOrder;
     private Long idClient;
     private String emailClient;
